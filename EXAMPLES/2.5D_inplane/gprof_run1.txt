@@ -1,0 +1,1213 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls   s/call   s/call  name    
+ 32.05      4.08     4.08 41062400     0.00     0.00  __mat_elastic_MOD_mat_elast_f
+ 24.59      7.21     3.13 82124800     0.00     0.00  __fields_class_MOD_field_get_elem_sub
+ 16.65      9.33     2.12     3208     0.00     0.00  __solver_MOD_solve_leapfrog
+ 12.02     10.86     1.53 41062400     0.00     0.00  __fields_class_MOD_field_add_elem_2
+  6.28     11.66     0.80 41062400     0.00     0.00  __mat_elastic_MOD_mat_elast_add_25d_f
+  2.91     12.03     0.37     3208     0.00     0.00  __solver_MOD_compute_fint
+  2.20     12.31     0.28                             _init
+  0.86     12.42     0.11   435203     0.00     0.00  __spec_grid_MOD___copy_spec_grid_Sem_grid_type
+  0.63     12.50     0.08 41062400     0.00     0.00  __mat_gen_MOD_mat_fint
+  0.31     12.54     0.04 84774401     0.00     0.00  __prop_mat_MOD_mat_iskind_elem
+  0.31     12.58     0.04     3208     0.00     0.00  __bc_dynflt_MOD_bc_dynflt_apply
+  0.24     12.61     0.03 10560033     0.00     0.00  __utils_MOD_invert2
+  0.24     12.64     0.03   422400     0.00     0.00  __fields_class_MOD_field_strain_elem
+  0.24     12.67     0.03     6418     0.00     0.00  __bc_dynflt_MOD___copy_bc_dynflt_Bc_dynflt_input_type
+  0.08     12.68     0.01  1689600     0.00     0.00  __mxmlib_MOD_mxm
+  0.08     12.69     0.01   422401     0.00     0.00  __spec_grid_MOD_se_inversejacobian_e
+  0.08     12.70     0.01   422400     0.00     0.00  __mat_elastic_MOD_mat_elast_stress
+  0.08     12.71     0.01     3209     0.00     0.00  __bc_dynflt_swf_MOD_swf_mu
+  0.08     12.72     0.01        1     0.01     0.02  __init_MOD_init_main
+  0.08     12.73     0.01        1     0.01     0.01  __spec_grid_MOD_se_init
+  0.00     12.73     0.00 41510400     0.00     0.00  __mat_elastic_MOD_mat_iselastic
+  0.00     12.73     0.00 41510400     0.00     0.00  __mat_kelvin_voigt_MOD_mat_iskelvinvoigt
+  0.00     12.73     0.00   921604     0.00     0.00  __prop_elem_MOD_prop_get_1
+  0.00     12.73     0.00   921604     0.00     0.00  __prop_mat_MOD_mat_getprop_e
+  0.00     12.73     0.00   844800     0.00     0.00  __fields_class_MOD_field_get_elem_2
+  0.00     12.73     0.00   464423     0.00     0.00  __fem_grid_MOD_fe_getelementcoord
+  0.00     12.73     0.00   435200     0.00     0.00  __mat_damage_MOD_mat_isdamage
+  0.00     12.73     0.00   435200     0.00     0.00  __mat_plastic_MOD_mat_isplastic
+  0.00     12.73     0.00   435200     0.00     0.00  __mat_visco_MOD_mat_isvisco
+  0.00     12.73     0.00   422400     0.00     0.00  __mat_gen_MOD_mat_strain_gen
+  0.00     12.73     0.00   422400     0.00     0.00  __mat_gen_MOD_mat_stress_dv
+  0.00     12.73     0.00   102400     0.00     0.00  __utils_MOD_sub2ind_b
+  0.00     12.73     0.00    98169     0.00     0.00  __generic_list_MOD_li_associated
+  0.00     12.73     0.00    66653     0.00     0.00  __generic_list_MOD_li_remove_head
+  0.00     12.73     0.00    64480     0.00     0.00  __utils_MOD_sub2ind
+  0.00     12.73     0.00    64000     0.00     0.00  __distribution_cd_MOD_dist_cd_init_2
+  0.00     12.73     0.00    64000     0.00     0.00  __distribution_cd_MOD_dist_cd_isdist
+  0.00     12.73     0.00    64000     0.00     0.00  __prop_elem_MOD_prop_set_cd1
+  0.00     12.73     0.00    64000     0.00     0.00  __prop_elem_MOD_prop_size
+  0.00     12.73     0.00    64000     0.00     0.00  __prop_mat_MOD_mat_setprop_elem_from_input
+  0.00     12.73     0.00    53608     0.00     0.00  __generic_list_MOD_li_add_to_head
+  0.00     12.73     0.00    32480     0.00     0.00  __generic_list_MOD_li_get_next
+  0.00     12.73     0.00    25840     0.00     0.00  __fem_grid_MOD_fe_getedgeconn
+  0.00     12.73     0.00    25600     0.00     0.00  __spec_grid_MOD_se_elem_coord
+  0.00     12.73     0.00    13524     0.00     0.00  __spec_grid_MOD_se_inquire
+  0.00     12.73     0.00    13049     0.00     0.00  __generic_list_MOD_li_init_list
+  0.00     12.73     0.00    13041     0.00     0.00  __fem_grid_MOD_fe_getvertexconn
+  0.00     12.73     0.00    13041     0.00     0.00  __generic_list_MOD_li_get_len
+  0.00     12.73     0.00    12832     0.00     0.00  __bc_gen_MOD___copy_bc_gen_Bc_type
+  0.00     12.73     0.00    12802     0.00     0.00  __spec_grid_MOD_se_volumeweights_e
+  0.00     12.73     0.00    12800     0.00     0.00  __fem_grid_MOD_fe_getelementsizes
+  0.00     12.73     0.00    12800     0.00     0.00  __fields_class_MOD_field_add_elem_1
+  0.00     12.73     0.00    12800     0.00     0.00  __mat_elastic_MOD_mat_elast_init_elem_prop
+  0.00     12.73     0.00    12800     0.00     0.00  __mat_elastic_MOD_mat_iselastichomogeneous
+  0.00     12.73     0.00    12800     0.00     0.00  __mat_mass_MOD_mat_mass_init_elem_prop
+  0.00     12.73     0.00    12800     0.00     0.00  __prop_mat_MOD_mat_isprop_input
+  0.00     12.73     0.00    12800     0.00     0.00  __prop_mat_MOD_mat_setprop_elem_ptr_input
+  0.00     12.73     0.00     6416     0.00     0.00  __bc_abso_MOD_bc_abso_apply
+  0.00     12.73     0.00     3600     0.00     0.00  __prop_elem_MOD_prop_get_ij_1
+  0.00     12.73     0.00     3600     0.00     0.00  __prop_mat_MOD_mat_getprop_ij
+  0.00     12.73     0.00     3209     0.00     0.00  __bc_dynflt_MOD_bc_dynflt_write
+  0.00     12.73     0.00     3209     0.00     0.00  __bc_dynflt_twf_MOD_twf_mu
+  0.00     12.73     0.00     3209     0.00     0.00  __bc_gen_MOD_bc_write
+  0.00     12.73     0.00     3209     0.00     0.00  __plot_gen_MOD_plot_field
+  0.00     12.73     0.00     3209     0.00     0.00  __receivers_MOD_rec_store
+  0.00     12.73     0.00     3208     0.00     0.00  __bc_dirneu_MOD_bc_dirneu_apply
+  0.00     12.73     0.00     3208     0.00     0.00  __bc_dynflt_normal_MOD_normal_getsigma
+  0.00     12.73     0.00     3208     0.00     0.00  __bc_dynflt_normal_MOD_normal_update
+  0.00     12.73     0.00     3208     0.00     0.00  __bc_dynflt_swf_MOD_swf_update_state
+  0.00     12.73     0.00     3208     0.00     0.00  __bc_gen_MOD_bc_apply
+  0.00     12.73     0.00     3208     0.00     0.00  __solver_MOD_solve
+  0.00     12.73     0.00     3208     0.00     0.00  __sources_MOD_so_add
+  0.00     12.73     0.00     1200     0.00     0.00  __spec_grid_MOD_se_jacobian_eij
+  0.00     12.73     0.00      960     0.00     0.00  __generic_list_MOD_li_get_head
+  0.00     12.73     0.00      480     0.00     0.00  __spec_grid_MOD_se_get_edge_nodes
+  0.00     12.73     0.00      300     0.00     0.00  __gll_MOD_hgll
+  0.00     12.73     0.00      141     0.00     0.00  __stdio_MOD_io_new_unit
+  0.00     12.73     0.00      132     0.00     0.00  __stdio_MOD_io_field_node_single
+  0.00     12.73     0.00       66     0.00     0.00  __mat_gen_MOD_mat_stress
+  0.00     12.73     0.00       66     0.00     0.00  __stdio_MOD_io_field_node_multi
+  0.00     12.73     0.00       53     0.00     0.00  __elem_q4_MOD_q4_getshape
+  0.00     12.73     0.00       43     0.00     0.00  __elem_q4_MOD_q4_getdershape
+  0.00     12.73     0.00       33     0.00     0.00  __mat_damage_MOD_mat_anydamage
+  0.00     12.73     0.00       33     0.00     0.00  __mat_gen_MOD_mat_write
+  0.00     12.73     0.00       33     0.00     0.00  __mat_plastic_MOD_mat_anyplastic
+  0.00     12.73     0.00       28     0.00     0.00  __fem_grid_MOD___copy_fem_grid_Fem_grid_type
+  0.00     12.73     0.00       26     0.00     0.00  __memory_info_MOD_storearray
+  0.00     12.73     0.00       25     0.00     0.00  __fem_grid_MOD_fe_getdershape
+  0.00     12.73     0.00       25     0.00     0.00  __fem_grid_MOD_fe_getshape
+  0.00     12.73     0.00       25     0.00     0.00  __gll_MOD_hdgll
+  0.00     12.73     0.00       19     0.00     0.00  __distribution_cd_MOD_dist_cd_read
+  0.00     12.73     0.00       19     0.00     0.00  __generic_list_MOD_li_check_list
+  0.00     12.73     0.00       19     0.00     0.00  __utils_MOD_string_setopt
+  0.00     12.73     0.00       18     0.00     0.00  __memory_info_MOD_memo_echo
+  0.00     12.73     0.00       13     0.00     0.00  __distribution_cd_MOD_dist_cd_init_1
+  0.00     12.73     0.00       10     0.00     0.00  __fem_grid_MOD_fe_find_point
+  0.00     12.73     0.00       10     0.00     0.00  __spec_grid_MOD_se_find_nearest_node
+  0.00     12.73     0.00       10     0.00     0.00  __spec_grid_MOD_se_find_point
+  0.00     12.73     0.00       10     0.00     0.00  __spec_grid_MOD_se_init_interpol
+  0.00     12.73     0.00       10     0.00     0.00  __spec_grid_MOD_se_node_belongs_to_2
+  0.00     12.73     0.00        6     0.00     0.00  __plot_gmt_MOD_plot_gmt_init
+  0.00     12.73     0.00        5     0.00     0.00  __prop_mat_MOD_mat_setprop_input
+  0.00     12.73     0.00        5     0.00     0.00  __utils_MOD_drank
+  0.00     12.73     0.00        4     0.00     0.00  __bc_periodic_MOD_bc_perio_intersects
+  0.00     12.73     0.00        4     0.00     0.00  __spec_grid_MOD_bc_get_normal_and_weights
+  0.00     12.73     0.00        4     0.00     0.00  __spec_grid_MOD_bc_inquire
+  0.00     12.73     0.00        4     0.00     0.00  __spec_grid_MOD_bc_tag_exists
+  0.00     12.73     0.00        3     0.00     0.00  __fields_class_MOD___copy_fields_class_Fields_type
+  0.00     12.73     0.00        3     0.00     0.00  __prop_mat_MOD_mat_setkind
+  0.00     12.73     0.00        3     0.00     0.00  __time_evol_MOD_time_gettimestep
+  0.00     12.73     0.00        2     0.00     0.00  __bc_abso_MOD_bc_abso_init
+  0.00     12.73     0.00        2     0.00     0.00  __bc_abso_MOD_bc_abso_read
+  0.00     12.73     0.00        2     0.00     0.00  __echo_MOD_echo_banner
+  0.00     12.73     0.00        2     0.00     0.00  __fem_grid_MOD_fe_getnodesperelement
+  0.00     12.73     0.00        2     0.00     0.00  __plot_postscript_MOD_plot_ps
+  0.00     12.73     0.00        2     0.00     0.00  __rcmlib_MOD_level_set
+  0.00     12.73     0.00        2     0.00     0.00  __time_evol_MOD_time_getcoefa2vrhs
+  0.00     12.73     0.00        2     0.00     0.00  __time_evol_MOD_time_getnbtimesteps
+  0.00     12.73     0.00        1     0.00    12.45  MAIN__
+  0.00     12.73     0.00        1     0.00     0.00  __bc_dirneu_MOD_bc_dirneu_init
+  0.00     12.73     0.00        1     0.00     0.00  __bc_dirneu_MOD_bc_dirneu_read
+  0.00     12.73     0.00        1     0.00     0.00  __bc_dynflt_MOD_bc_dynflt_init
+  0.00     12.73     0.00        1     0.00     0.00  __bc_dynflt_MOD_bc_dynflt_read
+  0.00     12.73     0.00        1     0.00     0.00  __bc_dynflt_normal_MOD_normal_init
+  0.00     12.73     0.00        1     0.00     0.00  __bc_dynflt_normal_MOD_normal_read
+  0.00     12.73     0.00        1     0.00     0.00  __bc_dynflt_swf_MOD_swf_init
+  0.00     12.73     0.00        1     0.00     0.00  __bc_dynflt_swf_MOD_swf_read
+  0.00     12.73     0.00        1     0.00     0.00  __bc_dynflt_twf_MOD_twf_read
+  0.00     12.73     0.00        1     0.00     0.00  __bc_gen_MOD_bc_init
+  0.00     12.73     0.00        1     0.00     0.00  __bc_gen_MOD_bc_read
+  0.00     12.73     0.00        1     0.00     0.00  __echo_MOD_echo_set
+  0.00     12.73     0.00        1     0.00     0.00  __fem_grid_MOD_fe_getnbelements
+  0.00     12.73     0.00        1     0.00     0.00  __fem_grid_MOD_fe_getnbnodes
+  0.00     12.73     0.00        1     0.00     0.00  __fem_grid_MOD_fe_reorder
+  0.00     12.73     0.00        1     0.00     0.00  __fem_grid_MOD_fe_setconnectivity
+  0.00     12.73     0.00        1     0.00     0.00  __fem_grid_MOD_fe_unsetconnectivity
+  0.00     12.73     0.00        1     0.00     0.00  __fields_class_MOD_fields_init
+  0.00     12.73     0.00        1     0.00     0.00  __gll_MOD_get_gll_info
+  0.00     12.73     0.00        1     0.00     0.00  __gll_MOD_print_gll_a
+  0.00     12.73     0.00        1     0.00     0.00  __gll_MOD_zwgljd
+  0.00     12.73     0.00        1     0.00     0.00  __input_MOD_read_main
+  0.00     12.73     0.00        1     0.00     0.00  __mat_elastic_MOD_mat_elast_init_elem_work
+  0.00     12.73     0.00        1     0.00     0.00  __mat_elastic_MOD_mat_elast_read
+  0.00     12.73     0.00        1     0.00     0.00  __mat_gen_MOD_mat_init_prop
+  0.00     12.73     0.00        1     0.00     0.00  __mat_gen_MOD_mat_init_work
+  0.00     12.73     0.00        1     0.00     0.00  __mat_gen_MOD_mat_read
+  0.00     12.73     0.00        1     0.00     0.00  __mat_mass_MOD_mat_mass_init
+  0.00     12.73     0.00        1     0.00     0.00  __mesh_cartesian_MOD_cart_build
+  0.00     12.73     0.00        1     0.00     0.00  __mesh_cartesian_MOD_cart_read
+  0.00     12.73     0.00        1     0.00     0.00  __mesh_gen_MOD_mesh_build
+  0.00     12.73     0.00        1     0.00     0.00  __mesh_gen_MOD_mesh_read
+  0.00     12.73     0.00        1     0.00     0.00  __mesh_structured_MOD_mesh_structured_boundaries
+  0.00     12.73     0.00        1     0.00     0.00  __mesh_structured_MOD_mesh_structured_connectivity
+  0.00     12.73     0.00        1     0.00     0.00  __mesh_structured_MOD_mesh_structured_renumber
+  0.00     12.73     0.00        1     0.00     0.00  __plot_gen_MOD_plot_init
+  0.00     12.73     0.00        1     0.00     0.00  __plot_gen_MOD_read_plot_gen
+  0.00     12.73     0.00        1     0.00     0.00  __rcmlib_MOD_genrcm
+  0.00     12.73     0.00        1     0.00     0.00  __rcmlib_MOD_perm_inverse
+  0.00     12.73     0.00        1     0.00     0.00  __receivers_MOD_rec_init
+  0.00     12.73     0.00        1     0.00     0.00  __receivers_MOD_rec_read
+  0.00     12.73     0.00        1     0.00     0.00  __receivers_MOD_rec_write
+  0.00     12.73     0.00        1     0.00     0.00  __sources_MOD_so_read
+  0.00     12.73     0.00        1     0.00     0.00  __spec_grid_MOD_se_firstelementtagged
+  0.00     12.73     0.00        1     0.00     0.00  __spec_grid_MOD_se_isflat
+  0.00     12.73     0.00        1     0.00     0.00  __time_evol_MOD_time_getcoefa2d
+  0.00     12.73     0.00        1     0.00     0.00  __time_evol_MOD_time_getcoefa2v
+  0.00     12.73     0.00        1     0.00     0.00  __time_evol_MOD_time_init
+  0.00     12.73     0.00        1     0.00     0.00  __time_evol_MOD_time_needsalphafield
+  0.00     12.73     0.00        1     0.00     0.00  __time_evol_MOD_time_read
+  0.00     12.73     0.00        1     0.00     0.00  __utils_MOD_unique
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012-2024 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 4 byte(s) for 0.08% of 12.73 seconds
+
+index % time    self  children    called     name
+                0.00   12.45       1/1           main [2]
+[1]     97.8    0.00   12.45       1         MAIN__ [1]
+                2.12   10.08    3208/3208        __solver_MOD_solve_leapfrog [3]
+                0.00    0.20    3209/3209        __plot_gen_MOD_plot_field [12]
+                0.00    0.03    3208/3209        __bc_gen_MOD_bc_write [23]
+                0.01    0.01       1/1           __init_MOD_init_main [24]
+                0.00    0.00    3209/3209        __receivers_MOD_rec_store [84]
+                0.00    0.00    3208/3208        __solver_MOD_solve [89]
+                0.00    0.00       2/2           __echo_MOD_echo_banner [129]
+                0.00    0.00       1/1           __input_MOD_read_main [154]
+                0.00    0.00       1/1           __receivers_MOD_rec_write [169]
+-----------------------------------------------
+                                                 <spontaneous>
+[2]     97.8    0.00   12.45                 main [2]
+                0.00   12.45       1/1           MAIN__ [1]
+-----------------------------------------------
+                2.12   10.08    3208/3208        MAIN__ [1]
+[3]     95.8    2.12   10.08    3208         __solver_MOD_solve_leapfrog [3]
+                0.37    9.66    3208/3208        __solver_MOD_compute_fint [4]
+                0.00    0.05    3208/3208        __bc_gen_MOD_bc_apply [18]
+                0.00    0.00    3208/3208        __sources_MOD_so_add [90]
+-----------------------------------------------
+                0.37    9.66    3208/3208        __solver_MOD_solve_leapfrog [3]
+[4]     78.8    0.37    9.66    3208         __solver_MOD_compute_fint [4]
+                0.08    4.92 41062400/41062400     __mat_gen_MOD_mat_fint [5]
+                3.13    0.00 82124800/82124800     __fields_class_MOD_field_get_elem_sub [7]
+                1.53    0.00 41062400/41062400     __fields_class_MOD_field_add_elem_2 [8]
+-----------------------------------------------
+                0.08    4.92 41062400/41062400     __solver_MOD_compute_fint [4]
+[5]     39.3    0.08    4.92 41062400         __mat_gen_MOD_mat_fint [5]
+                4.08    0.00 41062400/41062400     __mat_elastic_MOD_mat_elast_f [6]
+                0.80    0.00 41062400/41062400     __mat_elastic_MOD_mat_elast_add_25d_f [9]
+                0.04    0.00 82124800/84774401     __prop_mat_MOD_mat_iskind_elem [19]
+                0.00    0.00 41062400/41510400     __mat_kelvin_voigt_MOD_mat_iskelvinvoigt [48]
+                0.00    0.00 41062400/41510400     __mat_elastic_MOD_mat_iselastic [47]
+-----------------------------------------------
+                4.08    0.00 41062400/41062400     __mat_gen_MOD_mat_fint [5]
+[6]     32.1    4.08    0.00 41062400         __mat_elastic_MOD_mat_elast_f [6]
+-----------------------------------------------
+                3.13    0.00 82124800/82124800     __solver_MOD_compute_fint [4]
+[7]     24.6    3.13    0.00 82124800         __fields_class_MOD_field_get_elem_sub [7]
+-----------------------------------------------
+                1.53    0.00 41062400/41062400     __solver_MOD_compute_fint [4]
+[8]     12.0    1.53    0.00 41062400         __fields_class_MOD_field_add_elem_2 [8]
+-----------------------------------------------
+                0.80    0.00 41062400/41062400     __mat_gen_MOD_mat_fint [5]
+[9]      6.3    0.80    0.00 41062400         __mat_elastic_MOD_mat_elast_add_25d_f [9]
+-----------------------------------------------
+                                                 <spontaneous>
+[10]     2.2    0.28    0.00                 _init [10]
+-----------------------------------------------
+                0.00    0.20  422400/422400      __plot_gen_MOD_plot_field [12]
+[11]     1.6    0.00    0.20  422400         __mat_gen_MOD_mat_stress_dv [11]
+                0.00    0.19  422400/422400      __mat_gen_MOD_mat_strain_gen [14]
+                0.01    0.00  422400/422400      __mat_elastic_MOD_mat_elast_stress [25]
+                0.00    0.00 2112000/84774401     __prop_mat_MOD_mat_iskind_elem [19]
+                0.00    0.00  422400/41510400     __mat_kelvin_voigt_MOD_mat_iskelvinvoigt [48]
+                0.00    0.00  422400/41510400     __mat_elastic_MOD_mat_iselastic [47]
+                0.00    0.00  422400/435200      __mat_plastic_MOD_mat_isplastic [54]
+                0.00    0.00  422400/435200      __mat_visco_MOD_mat_isvisco [55]
+                0.00    0.00  422400/435200      __mat_damage_MOD_mat_isdamage [53]
+-----------------------------------------------
+                0.00    0.20    3209/3209        MAIN__ [1]
+[12]     1.6    0.00    0.20    3209         __plot_gen_MOD_plot_field [12]
+                0.00    0.20  422400/422400      __mat_gen_MOD_mat_stress_dv [11]
+                0.00    0.00  844800/844800      __fields_class_MOD_field_get_elem_2 [51]
+                0.00    0.00      99/141         __stdio_MOD_io_new_unit [95]
+                0.00    0.00      66/66          __stdio_MOD_io_field_node_multi [98]
+                0.00    0.00      33/33          __mat_gen_MOD_mat_write [102]
+-----------------------------------------------
+                0.03    0.16  422400/422400      __mat_gen_MOD_mat_strain_gen [14]
+[13]     1.5    0.03    0.16  422400         __fields_class_MOD_field_strain_elem [13]
+                0.01    0.14  422400/422401      __spec_grid_MOD_se_inversejacobian_e [15]
+                0.01    0.00 1689600/1689600     __mxmlib_MOD_mxm [26]
+-----------------------------------------------
+                0.00    0.19  422400/422400      __mat_gen_MOD_mat_stress_dv [11]
+[14]     1.5    0.00    0.19  422400         __mat_gen_MOD_mat_strain_gen [14]
+                0.03    0.16  422400/422400      __fields_class_MOD_field_strain_elem [13]
+-----------------------------------------------
+                0.00    0.00       1/422401      __mat_elastic_MOD_mat_elast_init_elem_work [36]
+                0.01    0.14  422400/422401      __fields_class_MOD_field_strain_elem [13]
+[15]     1.2    0.01    0.14  422401         __spec_grid_MOD_se_inversejacobian_e [15]
+                0.11    0.00  422401/435203      __spec_grid_MOD___copy_spec_grid_Sem_grid_type [16]
+                0.03    0.00 10560025/10560033     __utils_MOD_invert2 [20]
+-----------------------------------------------
+                0.00    0.00   12802/435203      __spec_grid_MOD_se_volumeweights_e [29]
+                0.11    0.00  422401/435203      __spec_grid_MOD_se_inversejacobian_e [15]
+[16]     0.9    0.11    0.00  435203         __spec_grid_MOD___copy_spec_grid_Sem_grid_type [16]
+                0.00    0.00  435203/464423      __fem_grid_MOD_fe_getelementcoord [52]
+-----------------------------------------------
+                0.04    0.01    3208/3208        __bc_gen_MOD_bc_apply [18]
+[17]     0.4    0.04    0.01    3208         __bc_dynflt_MOD_bc_dynflt_apply [17]
+                0.01    0.00    3208/3209        __bc_dynflt_swf_MOD_swf_mu [27]
+                0.00    0.00    3208/3208        __bc_dynflt_normal_MOD_normal_update [87]
+                0.00    0.00    3208/3208        __bc_dynflt_swf_MOD_swf_update_state [88]
+                0.00    0.00    3208/3209        __bc_dynflt_twf_MOD_twf_mu [83]
+                0.00    0.00    3208/3208        __bc_dynflt_normal_MOD_normal_getsigma [86]
+-----------------------------------------------
+                0.00    0.05    3208/3208        __solver_MOD_solve_leapfrog [3]
+[18]     0.4    0.00    0.05    3208         __bc_gen_MOD_bc_apply [18]
+                0.04    0.01    3208/3208        __bc_dynflt_MOD_bc_dynflt_apply [17]
+                0.00    0.00   12832/12832       __bc_gen_MOD___copy_bc_gen_Bc_type [73]
+                0.00    0.00    6416/6416        __bc_abso_MOD_bc_abso_apply [80]
+-----------------------------------------------
+                0.00    0.00       1/84774401     __mat_elastic_MOD_mat_elast_init_elem_work [36]
+                0.00    0.00   12800/84774401     __mat_elastic_MOD_mat_elast_init_elem_prop [34]
+                0.00    0.00   38400/84774401     __mat_gen_MOD_mat_init_work [32]
+                0.00    0.00   64000/84774401     __mat_gen_MOD_mat_init_prop [31]
+                0.00    0.00  422400/84774401     __mat_elastic_MOD_mat_elast_stress [25]
+                0.00    0.00 2112000/84774401     __mat_gen_MOD_mat_stress_dv [11]
+                0.04    0.00 82124800/84774401     __mat_gen_MOD_mat_fint [5]
+[19]     0.3    0.04    0.00 84774401         __prop_mat_MOD_mat_iskind_elem [19]
+-----------------------------------------------
+                0.00    0.00       8/10560033     __fem_grid_MOD_fe_find_point [37]
+                0.03    0.00 10560025/10560033     __spec_grid_MOD_se_inversejacobian_e [15]
+[20]     0.2    0.03    0.00 10560033         __utils_MOD_invert2 [20]
+-----------------------------------------------
+                0.03    0.00    6418/6418        __bc_dynflt_MOD_bc_dynflt_write [22]
+[21]     0.2    0.03    0.00    6418         __bc_dynflt_MOD___copy_bc_dynflt_Bc_dynflt_input_type [21]
+-----------------------------------------------
+                0.00    0.03    3209/3209        __bc_gen_MOD_bc_write [23]
+[22]     0.2    0.00    0.03    3209         __bc_dynflt_MOD_bc_dynflt_write [22]
+                0.03    0.00    6418/6418        __bc_dynflt_MOD___copy_bc_dynflt_Bc_dynflt_input_type [21]
+-----------------------------------------------
+                0.00    0.00       1/3209        __bc_gen_MOD_bc_init [33]
+                0.00    0.03    3208/3209        MAIN__ [1]
+[23]     0.2    0.00    0.03    3209         __bc_gen_MOD_bc_write [23]
+                0.00    0.03    3209/3209        __bc_dynflt_MOD_bc_dynflt_write [22]
+-----------------------------------------------
+                0.01    0.01       1/1           MAIN__ [1]
+[24]     0.2    0.01    0.01       1         __init_MOD_init_main [24]
+                0.01    0.00       1/1           __spec_grid_MOD_se_init [28]
+                0.00    0.00       1/1           __mat_mass_MOD_mat_mass_init [30]
+                0.00    0.00       1/1           __mat_gen_MOD_mat_init_prop [31]
+                0.00    0.00       1/1           __mat_gen_MOD_mat_init_work [32]
+                0.00    0.00       1/1           __bc_gen_MOD_bc_init [33]
+                0.00    0.00       1/1           __receivers_MOD_rec_init [39]
+                0.00    0.00   25600/921604      __prop_mat_MOD_mat_getprop_e [50]
+                0.00    0.00   12800/13524       __spec_grid_MOD_se_inquire [69]
+                0.00    0.00   12800/25600       __spec_grid_MOD_se_elem_coord [68]
+                0.00    0.00       2/141         __stdio_MOD_io_new_unit [95]
+                0.00    0.00       2/2           __plot_postscript_MOD_plot_ps [131]
+                0.00    0.00       1/1           __mesh_gen_MOD_mesh_build [159]
+                0.00    0.00       1/1           __plot_gen_MOD_plot_init [164]
+                0.00    0.00       1/1           __time_evol_MOD_time_init [175]
+                0.00    0.00       1/3           __time_evol_MOD_time_gettimestep [126]
+                0.00    0.00       1/26          __memory_info_MOD_storearray [105]
+                0.00    0.00       1/1           __time_evol_MOD_time_needsalphafield [176]
+                0.00    0.00       1/1           __fields_class_MOD_fields_init [150]
+                0.00    0.00       1/18          __memory_info_MOD_memo_echo [112]
+-----------------------------------------------
+                0.01    0.00  422400/422400      __mat_gen_MOD_mat_stress_dv [11]
+[25]     0.1    0.01    0.00  422400         __mat_elastic_MOD_mat_elast_stress [25]
+                0.00    0.00  422400/84774401     __prop_mat_MOD_mat_iskind_elem [19]
+                0.00    0.00  844800/921604      __prop_mat_MOD_mat_getprop_e [50]
+-----------------------------------------------
+                0.01    0.00 1689600/1689600     __fields_class_MOD_field_strain_elem [13]
+[26]     0.1    0.01    0.00 1689600         __mxmlib_MOD_mxm [26]
+-----------------------------------------------
+                0.00    0.00       1/3209        __bc_dynflt_MOD_bc_dynflt_init [35]
+                0.01    0.00    3208/3209        __bc_dynflt_MOD_bc_dynflt_apply [17]
+[27]     0.1    0.01    0.00    3209         __bc_dynflt_swf_MOD_swf_mu [27]
+-----------------------------------------------
+                0.01    0.00       1/1           __init_MOD_init_main [24]
+[28]     0.1    0.01    0.00       1         __spec_grid_MOD_se_init [28]
+                0.00    0.00   33928/98169       __generic_list_MOD_li_associated [57]
+                0.00    0.00   32480/32480       __generic_list_MOD_li_get_next [66]
+                0.00    0.00   25840/25840       __fem_grid_MOD_fe_getedgeconn [67]
+                0.00    0.00   13041/13041       __fem_grid_MOD_fe_getvertexconn [71]
+                0.00    0.00   12800/464423      __fem_grid_MOD_fe_getelementcoord [52]
+                0.00    0.00    2412/66653       __generic_list_MOD_li_remove_head [58]
+                0.00    0.00    2408/53608       __generic_list_MOD_li_add_to_head [65]
+                0.00    0.00     960/960         __generic_list_MOD_li_get_head [92]
+                0.00    0.00     480/480         __spec_grid_MOD_se_get_edge_nodes [93]
+                0.00    0.00      25/25          __fem_grid_MOD_fe_getdershape [106]
+                0.00    0.00      25/25          __fem_grid_MOD_fe_getshape [107]
+                0.00    0.00       8/13049       __generic_list_MOD_li_init_list [70]
+                0.00    0.00       4/13524       __spec_grid_MOD_se_inquire [69]
+                0.00    0.00       4/141         __stdio_MOD_io_new_unit [95]
+                0.00    0.00       4/5           __utils_MOD_drank [119]
+                0.00    0.00       2/2           __fem_grid_MOD_fe_getnodesperelement [130]
+                0.00    0.00       2/18          __memory_info_MOD_memo_echo [112]
+                0.00    0.00       2/26          __memory_info_MOD_storearray [105]
+                0.00    0.00       1/1           __gll_MOD_get_gll_info [151]
+                0.00    0.00       1/1           __gll_MOD_print_gll_a [152]
+                0.00    0.00       1/1           __fem_grid_MOD_fe_getnbelements [145]
+                0.00    0.00       1/1           __fem_grid_MOD_fe_unsetconnectivity [149]
+                0.00    0.00       1/1           __fem_grid_MOD_fe_getnbnodes [146]
+-----------------------------------------------
+                0.00    0.00       2/12802       __mat_elastic_MOD_mat_elast_init_elem_work [36]
+                0.00    0.00   12800/12802       __mat_mass_MOD_mat_mass_init [30]
+[29]     0.0    0.00    0.00   12802         __spec_grid_MOD_se_volumeweights_e [29]
+                0.00    0.00   12802/435203      __spec_grid_MOD___copy_spec_grid_Sem_grid_type [16]
+-----------------------------------------------
+                0.00    0.00       1/1           __init_MOD_init_main [24]
+[30]     0.0    0.00    0.00       1         __mat_mass_MOD_mat_mass_init [30]
+                0.00    0.00   12800/12802       __spec_grid_MOD_se_volumeweights_e [29]
+                0.00    0.00   12800/12800       __fields_class_MOD_field_add_elem_1 [75]
+                0.00    0.00   12800/921604      __prop_mat_MOD_mat_getprop_e [50]
+                0.00    0.00       1/18          __memory_info_MOD_memo_echo [112]
+                0.00    0.00       1/26          __memory_info_MOD_storearray [105]
+-----------------------------------------------
+                0.00    0.00       1/1           __init_MOD_init_main [24]
+[31]     0.0    0.00    0.00       1         __mat_gen_MOD_mat_init_prop [31]
+                0.00    0.00   64000/84774401     __prop_mat_MOD_mat_iskind_elem [19]
+                0.00    0.00   12800/12800       __mat_elastic_MOD_mat_elast_init_elem_prop [34]
+                0.00    0.00   38400/921604      __prop_mat_MOD_mat_getprop_e [50]
+                0.00    0.00   12800/41510400     __mat_elastic_MOD_mat_iselastic [47]
+                0.00    0.00   12800/12800       __mat_mass_MOD_mat_mass_init_elem_prop [77]
+                0.00    0.00   12800/41510400     __mat_kelvin_voigt_MOD_mat_iskelvinvoigt [48]
+                0.00    0.00   12800/435200      __mat_plastic_MOD_mat_isplastic [54]
+                0.00    0.00   12800/435200      __mat_damage_MOD_mat_isdamage [53]
+                0.00    0.00   12800/435200      __mat_visco_MOD_mat_isvisco [55]
+                0.00    0.00   12800/12800       __prop_mat_MOD_mat_setprop_elem_ptr_input [79]
+                0.00    0.00   12800/25600       __spec_grid_MOD_se_elem_coord [68]
+                0.00    0.00       7/26          __memory_info_MOD_storearray [105]
+                0.00    0.00       6/141         __stdio_MOD_io_new_unit [95]
+                0.00    0.00       3/18          __memory_info_MOD_memo_echo [112]
+-----------------------------------------------
+                0.00    0.00       1/1           __init_MOD_init_main [24]
+[32]     0.0    0.00    0.00       1         __mat_gen_MOD_mat_init_work [32]
+                0.00    0.00   38400/84774401     __prop_mat_MOD_mat_iskind_elem [19]
+                0.00    0.00       1/1           __mat_elastic_MOD_mat_elast_init_elem_work [36]
+                0.00    0.00   12800/12800       __mat_elastic_MOD_mat_iselastichomogeneous [76]
+                0.00    0.00   12800/41510400     __mat_kelvin_voigt_MOD_mat_iskelvinvoigt [48]
+                0.00    0.00   12800/41510400     __mat_elastic_MOD_mat_iselastic [47]
+                0.00    0.00       6/26          __memory_info_MOD_storearray [105]
+                0.00    0.00       2/18          __memory_info_MOD_memo_echo [112]
+                0.00    0.00       1/1           __spec_grid_MOD_se_isflat [172]
+                0.00    0.00       1/1           __spec_grid_MOD_se_firstelementtagged [171]
+-----------------------------------------------
+                0.00    0.00       1/1           __init_MOD_init_main [24]
+[33]     0.0    0.00    0.00       1         __bc_gen_MOD_bc_init [33]
+                0.00    0.00       1/3209        __bc_gen_MOD_bc_write [23]
+                0.00    0.00       1/1           __bc_dynflt_MOD_bc_dynflt_init [35]
+                0.00    0.00       4/4           __spec_grid_MOD_bc_tag_exists [123]
+                0.00    0.00       2/2           __bc_abso_MOD_bc_abso_init [127]
+                0.00    0.00       1/1           __bc_dirneu_MOD_bc_dirneu_init [135]
+-----------------------------------------------
+                0.00    0.00   12800/12800       __mat_gen_MOD_mat_init_prop [31]
+[34]     0.0    0.00    0.00   12800         __mat_elastic_MOD_mat_elast_init_elem_prop [34]
+                0.00    0.00   12800/84774401     __prop_mat_MOD_mat_iskind_elem [19]
+                0.00    0.00   51200/64000       __prop_mat_MOD_mat_setprop_elem_from_input [64]
+                0.00    0.00   12800/12800       __prop_mat_MOD_mat_isprop_input [78]
+-----------------------------------------------
+                0.00    0.00       1/1           __bc_gen_MOD_bc_init [33]
+[35]     0.0    0.00    0.00       1         __bc_dynflt_MOD_bc_dynflt_init [35]
+                0.00    0.00       1/3209        __bc_dynflt_swf_MOD_swf_mu [27]
+                0.00    0.00       8/13          __distribution_cd_MOD_dist_cd_init_1 [113]
+                0.00    0.00       4/141         __stdio_MOD_io_new_unit [95]
+                0.00    0.00       1/4           __spec_grid_MOD_bc_inquire [122]
+                0.00    0.00       1/1           __time_evol_MOD_time_getcoefa2v [174]
+                0.00    0.00       1/1           __time_evol_MOD_time_getcoefa2d [173]
+                0.00    0.00       1/3           __time_evol_MOD_time_gettimestep [126]
+                0.00    0.00       1/1           __bc_dynflt_swf_MOD_swf_init [140]
+                0.00    0.00       1/1           __bc_dynflt_normal_MOD_normal_init [138]
+                0.00    0.00       1/2           __time_evol_MOD_time_getnbtimesteps [134]
+                0.00    0.00       1/4           __bc_periodic_MOD_bc_perio_intersects [120]
+                0.00    0.00       1/4           __spec_grid_MOD_bc_get_normal_and_weights [121]
+                0.00    0.00       1/3209        __bc_dynflt_twf_MOD_twf_mu [83]
+-----------------------------------------------
+                0.00    0.00       1/1           __mat_gen_MOD_mat_init_work [32]
+[36]     0.0    0.00    0.00       1         __mat_elastic_MOD_mat_elast_init_elem_work [36]
+                0.00    0.00       2/12802       __spec_grid_MOD_se_volumeweights_e [29]
+                0.00    0.00       1/422401      __spec_grid_MOD_se_inversejacobian_e [15]
+                0.00    0.00       1/84774401     __prop_mat_MOD_mat_iskind_elem [19]
+                0.00    0.00       4/921604      __prop_mat_MOD_mat_getprop_e [50]
+-----------------------------------------------
+                0.00    0.00      10/10          __spec_grid_MOD_se_find_point [38]
+[37]     0.0    0.00    0.00      10         __fem_grid_MOD_fe_find_point [37]
+                0.00    0.00       8/10560033     __utils_MOD_invert2 [20]
+                0.00    0.00      28/28          __fem_grid_MOD___copy_fem_grid_Fem_grid_type [104]
+                0.00    0.00      20/464423      __fem_grid_MOD_fe_getelementcoord [52]
+                0.00    0.00      18/43          __elem_q4_MOD_q4_getdershape [100]
+-----------------------------------------------
+                0.00    0.00      10/10          __receivers_MOD_rec_init [39]
+[38]     0.0    0.00    0.00      10         __spec_grid_MOD_se_find_point [38]
+                0.00    0.00      10/10          __fem_grid_MOD_fe_find_point [37]
+                0.00    0.00      10/10          __spec_grid_MOD_se_find_nearest_node [114]
+                0.00    0.00      10/10          __spec_grid_MOD_se_node_belongs_to_2 [116]
+-----------------------------------------------
+                0.00    0.00       1/1           __init_MOD_init_main [24]
+[39]     0.0    0.00    0.00       1         __receivers_MOD_rec_init [39]
+                0.00    0.00      10/10          __spec_grid_MOD_se_find_point [38]
+                0.00    0.00      10/10          __spec_grid_MOD_se_init_interpol [115]
+                0.00    0.00       1/3           __time_evol_MOD_time_gettimestep [126]
+                0.00    0.00       1/2           __time_evol_MOD_time_getnbtimesteps [134]
+                0.00    0.00       1/18          __memory_info_MOD_memo_echo [112]
+                0.00    0.00       1/26          __memory_info_MOD_storearray [105]
+                0.00    0.00       1/141         __stdio_MOD_io_new_unit [95]
+-----------------------------------------------
+                0.00    0.00   12800/41510400     __mat_gen_MOD_mat_init_work [32]
+                0.00    0.00   12800/41510400     __mat_gen_MOD_mat_init_prop [31]
+                0.00    0.00  422400/41510400     __mat_gen_MOD_mat_stress_dv [11]
+                0.00    0.00 41062400/41510400     __mat_gen_MOD_mat_fint [5]
+[47]     0.0    0.00    0.00 41510400         __mat_elastic_MOD_mat_iselastic [47]
+-----------------------------------------------
+                0.00    0.00   12800/41510400     __mat_gen_MOD_mat_init_work [32]
+                0.00    0.00   12800/41510400     __mat_gen_MOD_mat_init_prop [31]
+                0.00    0.00  422400/41510400     __mat_gen_MOD_mat_stress_dv [11]
+                0.00    0.00 41062400/41510400     __mat_gen_MOD_mat_fint [5]
+[48]     0.0    0.00    0.00 41510400         __mat_kelvin_voigt_MOD_mat_iskelvinvoigt [48]
+-----------------------------------------------
+                0.00    0.00  921604/921604      __prop_mat_MOD_mat_getprop_e [50]
+[49]     0.0    0.00    0.00  921604         __prop_elem_MOD_prop_get_1 [49]
+-----------------------------------------------
+                0.00    0.00       4/921604      __mat_elastic_MOD_mat_elast_init_elem_work [36]
+                0.00    0.00   12800/921604      __mat_mass_MOD_mat_mass_init [30]
+                0.00    0.00   25600/921604      __init_MOD_init_main [24]
+                0.00    0.00   38400/921604      __mat_gen_MOD_mat_init_prop [31]
+                0.00    0.00  844800/921604      __mat_elastic_MOD_mat_elast_stress [25]
+[50]     0.0    0.00    0.00  921604         __prop_mat_MOD_mat_getprop_e [50]
+                0.00    0.00  921604/921604      __prop_elem_MOD_prop_get_1 [49]
+-----------------------------------------------
+                0.00    0.00  844800/844800      __plot_gen_MOD_plot_field [12]
+[51]     0.0    0.00    0.00  844800         __fields_class_MOD_field_get_elem_2 [51]
+-----------------------------------------------
+                0.00    0.00      20/464423      __fem_grid_MOD_fe_find_point [37]
+                0.00    0.00    1200/464423      __spec_grid_MOD_se_jacobian_eij [91]
+                0.00    0.00    2400/464423      __spec_grid_MOD_bc_get_normal_and_weights [121]
+                0.00    0.00   12800/464423      __fem_grid_MOD_fe_getelementsizes [74]
+                0.00    0.00   12800/464423      __spec_grid_MOD_se_init [28]
+                0.00    0.00  435203/464423      __spec_grid_MOD___copy_spec_grid_Sem_grid_type [16]
+[52]     0.0    0.00    0.00  464423         __fem_grid_MOD_fe_getelementcoord [52]
+-----------------------------------------------
+                0.00    0.00   12800/435200      __mat_gen_MOD_mat_init_prop [31]
+                0.00    0.00  422400/435200      __mat_gen_MOD_mat_stress_dv [11]
+[53]     0.0    0.00    0.00  435200         __mat_damage_MOD_mat_isdamage [53]
+-----------------------------------------------
+                0.00    0.00   12800/435200      __mat_gen_MOD_mat_init_prop [31]
+                0.00    0.00  422400/435200      __mat_gen_MOD_mat_stress_dv [11]
+[54]     0.0    0.00    0.00  435200         __mat_plastic_MOD_mat_isplastic [54]
+-----------------------------------------------
+                0.00    0.00   12800/435200      __mat_gen_MOD_mat_init_prop [31]
+                0.00    0.00  422400/435200      __mat_gen_MOD_mat_stress_dv [11]
+[55]     0.0    0.00    0.00  435200         __mat_visco_MOD_mat_isvisco [55]
+-----------------------------------------------
+                0.00    0.00  102400/102400      __mesh_structured_MOD_mesh_structured_renumber [163]
+[56]     0.0    0.00    0.00  102400         __utils_MOD_sub2ind_b [56]
+-----------------------------------------------
+                0.00    0.00   33928/98169       __spec_grid_MOD_se_init [28]
+                0.00    0.00   64241/98169       __fem_grid_MOD_fe_setconnectivity [148]
+[57]     0.0    0.00    0.00   98169         __generic_list_MOD_li_associated [57]
+-----------------------------------------------
+                0.00    0.00    2412/66653       __spec_grid_MOD_se_init [28]
+                0.00    0.00   64241/66653       __fem_grid_MOD_fe_setconnectivity [148]
+[58]     0.0    0.00    0.00   66653         __generic_list_MOD_li_remove_head [58]
+-----------------------------------------------
+                0.00    0.00     480/64480       __mesh_structured_MOD_mesh_structured_boundaries [161]
+                0.00    0.00   12800/64480       __mesh_cartesian_MOD_cart_build [157]
+                0.00    0.00   51200/64480       __mesh_structured_MOD_mesh_structured_connectivity [162]
+[59]     0.0    0.00    0.00   64480         __utils_MOD_sub2ind [59]
+-----------------------------------------------
+                0.00    0.00   64000/64000       __prop_elem_MOD_prop_set_cd1 [62]
+[60]     0.0    0.00    0.00   64000         __distribution_cd_MOD_dist_cd_init_2 [60]
+-----------------------------------------------
+                0.00    0.00   64000/64000       __prop_elem_MOD_prop_set_cd1 [62]
+[61]     0.0    0.00    0.00   64000         __distribution_cd_MOD_dist_cd_isdist [61]
+-----------------------------------------------
+                0.00    0.00   64000/64000       __prop_mat_MOD_mat_setprop_elem_from_input [64]
+[62]     0.0    0.00    0.00   64000         __prop_elem_MOD_prop_set_cd1 [62]
+                0.00    0.00   64000/64000       __distribution_cd_MOD_dist_cd_init_2 [60]
+                0.00    0.00   64000/64000       __distribution_cd_MOD_dist_cd_isdist [61]
+-----------------------------------------------
+                0.00    0.00   64000/64000       __prop_mat_MOD_mat_setprop_elem_from_input [64]
+[63]     0.0    0.00    0.00   64000         __prop_elem_MOD_prop_size [63]
+-----------------------------------------------
+                0.00    0.00   12800/64000       __mat_mass_MOD_mat_mass_init_elem_prop [77]
+                0.00    0.00   51200/64000       __mat_elastic_MOD_mat_elast_init_elem_prop [34]
+[64]     0.0    0.00    0.00   64000         __prop_mat_MOD_mat_setprop_elem_from_input [64]
+                0.00    0.00   64000/64000       __prop_elem_MOD_prop_set_cd1 [62]
+                0.00    0.00   64000/64000       __prop_elem_MOD_prop_size [63]
+-----------------------------------------------
+                0.00    0.00    2408/53608       __spec_grid_MOD_se_init [28]
+                0.00    0.00   51200/53608       __fem_grid_MOD_fe_setconnectivity [148]
+[65]     0.0    0.00    0.00   53608         __generic_list_MOD_li_add_to_head [65]
+-----------------------------------------------
+                0.00    0.00   32480/32480       __spec_grid_MOD_se_init [28]
+[66]     0.0    0.00    0.00   32480         __generic_list_MOD_li_get_next [66]
+-----------------------------------------------
+                0.00    0.00   25840/25840       __spec_grid_MOD_se_init [28]
+[67]     0.0    0.00    0.00   25840         __fem_grid_MOD_fe_getedgeconn [67]
+                0.00    0.00       1/1           __fem_grid_MOD_fe_setconnectivity [148]
+-----------------------------------------------
+                0.00    0.00   12800/25600       __init_MOD_init_main [24]
+                0.00    0.00   12800/25600       __mat_gen_MOD_mat_init_prop [31]
+[68]     0.0    0.00    0.00   25600         __spec_grid_MOD_se_elem_coord [68]
+-----------------------------------------------
+                0.00    0.00       4/13524       __spec_grid_MOD_se_init [28]
+                0.00    0.00     240/13524       __bc_abso_MOD_bc_abso_init [127]
+                0.00    0.00     480/13524       __spec_grid_MOD_bc_get_normal_and_weights [121]
+                0.00    0.00   12800/13524       __init_MOD_init_main [24]
+[69]     0.0    0.00    0.00   13524         __spec_grid_MOD_se_inquire [69]
+                0.00    0.00   12800/12800       __fem_grid_MOD_fe_getelementsizes [74]
+-----------------------------------------------
+                0.00    0.00       8/13049       __spec_grid_MOD_se_init [28]
+                0.00    0.00   13041/13049       __fem_grid_MOD_fe_setconnectivity [148]
+[70]     0.0    0.00    0.00   13049         __generic_list_MOD_li_init_list [70]
+-----------------------------------------------
+                0.00    0.00   13041/13041       __spec_grid_MOD_se_init [28]
+[71]     0.0    0.00    0.00   13041         __fem_grid_MOD_fe_getvertexconn [71]
+-----------------------------------------------
+                0.00    0.00   13041/13041       __fem_grid_MOD_fe_setconnectivity [148]
+[72]     0.0    0.00    0.00   13041         __generic_list_MOD_li_get_len [72]
+-----------------------------------------------
+                0.00    0.00   12832/12832       __bc_gen_MOD_bc_apply [18]
+[73]     0.0    0.00    0.00   12832         __bc_gen_MOD___copy_bc_gen_Bc_type [73]
+                0.00    0.00    3208/3208        __bc_dirneu_MOD_bc_dirneu_apply [85]
+-----------------------------------------------
+                0.00    0.00   12800/12800       __spec_grid_MOD_se_inquire [69]
+[74]     0.0    0.00    0.00   12800         __fem_grid_MOD_fe_getelementsizes [74]
+                0.00    0.00   12800/464423      __fem_grid_MOD_fe_getelementcoord [52]
+-----------------------------------------------
+                0.00    0.00   12800/12800       __mat_mass_MOD_mat_mass_init [30]
+[75]     0.0    0.00    0.00   12800         __fields_class_MOD_field_add_elem_1 [75]
+-----------------------------------------------
+                0.00    0.00   12800/12800       __mat_gen_MOD_mat_init_work [32]
+[76]     0.0    0.00    0.00   12800         __mat_elastic_MOD_mat_iselastichomogeneous [76]
+-----------------------------------------------
+                0.00    0.00   12800/12800       __mat_gen_MOD_mat_init_prop [31]
+[77]     0.0    0.00    0.00   12800         __mat_mass_MOD_mat_mass_init_elem_prop [77]
+                0.00    0.00   12800/64000       __prop_mat_MOD_mat_setprop_elem_from_input [64]
+-----------------------------------------------
+                0.00    0.00   12800/12800       __mat_elastic_MOD_mat_elast_init_elem_prop [34]
+[78]     0.0    0.00    0.00   12800         __prop_mat_MOD_mat_isprop_input [78]
+-----------------------------------------------
+                0.00    0.00   12800/12800       __mat_gen_MOD_mat_init_prop [31]
+[79]     0.0    0.00    0.00   12800         __prop_mat_MOD_mat_setprop_elem_ptr_input [79]
+-----------------------------------------------
+                0.00    0.00    6416/6416        __bc_gen_MOD_bc_apply [18]
+[80]     0.0    0.00    0.00    6416         __bc_abso_MOD_bc_abso_apply [80]
+-----------------------------------------------
+                0.00    0.00    3600/3600        __prop_mat_MOD_mat_getprop_ij [82]
+[81]     0.0    0.00    0.00    3600         __prop_elem_MOD_prop_get_ij_1 [81]
+-----------------------------------------------
+                0.00    0.00    3600/3600        __bc_abso_MOD_bc_abso_init [127]
+[82]     0.0    0.00    0.00    3600         __prop_mat_MOD_mat_getprop_ij [82]
+                0.00    0.00    3600/3600        __prop_elem_MOD_prop_get_ij_1 [81]
+-----------------------------------------------
+                0.00    0.00       1/3209        __bc_dynflt_MOD_bc_dynflt_init [35]
+                0.00    0.00    3208/3209        __bc_dynflt_MOD_bc_dynflt_apply [17]
+[83]     0.0    0.00    0.00    3209         __bc_dynflt_twf_MOD_twf_mu [83]
+-----------------------------------------------
+                0.00    0.00    3209/3209        MAIN__ [1]
+[84]     0.0    0.00    0.00    3209         __receivers_MOD_rec_store [84]
+-----------------------------------------------
+                0.00    0.00    3208/3208        __bc_gen_MOD___copy_bc_gen_Bc_type [73]
+[85]     0.0    0.00    0.00    3208         __bc_dirneu_MOD_bc_dirneu_apply [85]
+-----------------------------------------------
+                0.00    0.00    3208/3208        __bc_dynflt_MOD_bc_dynflt_apply [17]
+[86]     0.0    0.00    0.00    3208         __bc_dynflt_normal_MOD_normal_getsigma [86]
+-----------------------------------------------
+                0.00    0.00    3208/3208        __bc_dynflt_MOD_bc_dynflt_apply [17]
+[87]     0.0    0.00    0.00    3208         __bc_dynflt_normal_MOD_normal_update [87]
+-----------------------------------------------
+                0.00    0.00    3208/3208        __bc_dynflt_MOD_bc_dynflt_apply [17]
+[88]     0.0    0.00    0.00    3208         __bc_dynflt_swf_MOD_swf_update_state [88]
+-----------------------------------------------
+                0.00    0.00    3208/3208        MAIN__ [1]
+[89]     0.0    0.00    0.00    3208         __solver_MOD_solve [89]
+-----------------------------------------------
+                0.00    0.00    3208/3208        __solver_MOD_solve_leapfrog [3]
+[90]     0.0    0.00    0.00    3208         __sources_MOD_so_add [90]
+-----------------------------------------------
+                0.00    0.00    1200/1200        __bc_abso_MOD_bc_abso_init [127]
+[91]     0.0    0.00    0.00    1200         __spec_grid_MOD_se_jacobian_eij [91]
+                0.00    0.00    1200/464423      __fem_grid_MOD_fe_getelementcoord [52]
+-----------------------------------------------
+                0.00    0.00     960/960         __spec_grid_MOD_se_init [28]
+[92]     0.0    0.00    0.00     960         __generic_list_MOD_li_get_head [92]
+-----------------------------------------------
+                0.00    0.00     480/480         __spec_grid_MOD_se_init [28]
+[93]     0.0    0.00    0.00     480         __spec_grid_MOD_se_get_edge_nodes [93]
+-----------------------------------------------
+                0.00    0.00     300/300         __spec_grid_MOD_se_init_interpol [115]
+[94]     0.0    0.00    0.00     300         __gll_MOD_hgll [94]
+-----------------------------------------------
+                0.00    0.00       1/141         __gll_MOD_print_gll_a [152]
+                0.00    0.00       1/141         __input_MOD_read_main [154]
+                0.00    0.00       1/141         __receivers_MOD_rec_write [169]
+                0.00    0.00       1/141         __receivers_MOD_rec_init [39]
+                0.00    0.00       2/141         __init_MOD_init_main [24]
+                0.00    0.00       2/141         __mesh_gen_MOD_mesh_build [159]
+                0.00    0.00       2/141         __plot_postscript_MOD_plot_ps [131]
+                0.00    0.00       4/141         __bc_dynflt_MOD_bc_dynflt_init [35]
+                0.00    0.00       4/141         __spec_grid_MOD_se_init [28]
+                0.00    0.00       6/141         __mat_gen_MOD_mat_init_prop [31]
+                0.00    0.00      18/141         __memory_info_MOD_memo_echo [112]
+                0.00    0.00      99/141         __plot_gen_MOD_plot_field [12]
+[95]     0.0    0.00    0.00     141         __stdio_MOD_io_new_unit [95]
+-----------------------------------------------
+                0.00    0.00     132/132         __stdio_MOD_io_field_node_multi [98]
+[96]     0.0    0.00    0.00     132         __stdio_MOD_io_field_node_single [96]
+-----------------------------------------------
+                0.00    0.00      66/66          __mat_gen_MOD_mat_write [102]
+[97]     0.0    0.00    0.00      66         __mat_gen_MOD_mat_stress [97]
+                0.00    0.00      33/33          __mat_plastic_MOD_mat_anyplastic [103]
+                0.00    0.00      33/33          __mat_damage_MOD_mat_anydamage [101]
+-----------------------------------------------
+                0.00    0.00      66/66          __plot_gen_MOD_plot_field [12]
+[98]     0.0    0.00    0.00      66         __stdio_MOD_io_field_node_multi [98]
+                0.00    0.00     132/132         __stdio_MOD_io_field_node_single [96]
+-----------------------------------------------
+                0.00    0.00      25/53          __fem_grid_MOD_fe_getshape [107]
+                0.00    0.00      28/53          __fem_grid_MOD___copy_fem_grid_Fem_grid_type [104]
+[99]     0.0    0.00    0.00      53         __elem_q4_MOD_q4_getshape [99]
+-----------------------------------------------
+                0.00    0.00      18/43          __fem_grid_MOD_fe_find_point [37]
+                0.00    0.00      25/43          __fem_grid_MOD_fe_getdershape [106]
+[100]    0.0    0.00    0.00      43         __elem_q4_MOD_q4_getdershape [100]
+-----------------------------------------------
+                0.00    0.00      33/33          __mat_gen_MOD_mat_stress [97]
+[101]    0.0    0.00    0.00      33         __mat_damage_MOD_mat_anydamage [101]
+-----------------------------------------------
+                0.00    0.00      33/33          __plot_gen_MOD_plot_field [12]
+[102]    0.0    0.00    0.00      33         __mat_gen_MOD_mat_write [102]
+                0.00    0.00      66/66          __mat_gen_MOD_mat_stress [97]
+-----------------------------------------------
+                0.00    0.00      33/33          __mat_gen_MOD_mat_stress [97]
+[103]    0.0    0.00    0.00      33         __mat_plastic_MOD_mat_anyplastic [103]
+-----------------------------------------------
+                0.00    0.00      28/28          __fem_grid_MOD_fe_find_point [37]
+[104]    0.0    0.00    0.00      28         __fem_grid_MOD___copy_fem_grid_Fem_grid_type [104]
+                0.00    0.00      28/53          __elem_q4_MOD_q4_getshape [99]
+-----------------------------------------------
+                0.00    0.00       1/26          __init_MOD_init_main [24]
+                0.00    0.00       1/26          __mat_mass_MOD_mat_mass_init [30]
+                0.00    0.00       1/26          __receivers_MOD_rec_init [39]
+                0.00    0.00       2/26          __bc_abso_MOD_bc_abso_init [127]
+                0.00    0.00       2/26          __spec_grid_MOD_se_init [28]
+                0.00    0.00       3/26          __fields_class_MOD___copy_fields_class_Fields_type [124]
+                0.00    0.00       3/26          __mesh_cartesian_MOD_cart_build [157]
+                0.00    0.00       6/26          __mat_gen_MOD_mat_init_work [32]
+                0.00    0.00       7/26          __mat_gen_MOD_mat_init_prop [31]
+[105]    0.0    0.00    0.00      26         __memory_info_MOD_storearray [105]
+-----------------------------------------------
+                0.00    0.00      25/25          __spec_grid_MOD_se_init [28]
+[106]    0.0    0.00    0.00      25         __fem_grid_MOD_fe_getdershape [106]
+                0.00    0.00      25/43          __elem_q4_MOD_q4_getdershape [100]
+-----------------------------------------------
+                0.00    0.00      25/25          __spec_grid_MOD_se_init [28]
+[107]    0.0    0.00    0.00      25         __fem_grid_MOD_fe_getshape [107]
+                0.00    0.00      25/53          __elem_q4_MOD_q4_getshape [99]
+-----------------------------------------------
+                0.00    0.00      25/25          __gll_MOD_get_gll_info [151]
+[108]    0.0    0.00    0.00      25         __gll_MOD_hdgll [108]
+-----------------------------------------------
+                0.00    0.00       5/19          __bc_dynflt_swf_MOD_swf_read [141]
+                0.00    0.00       5/19          __mat_elastic_MOD_mat_elast_read [155]
+                0.00    0.00       9/19          __bc_dynflt_MOD_bc_dynflt_read [137]
+[109]    0.0    0.00    0.00      19         __distribution_cd_MOD_dist_cd_read [109]
+                0.00    0.00      19/19          __utils_MOD_string_setopt [111]
+-----------------------------------------------
+                0.00    0.00      19/19          __gll_MOD_zwgljd [153]
+[110]    0.0    0.00    0.00      19         __generic_list_MOD_li_check_list [110]
+-----------------------------------------------
+                0.00    0.00      19/19          __distribution_cd_MOD_dist_cd_read [109]
+[111]    0.0    0.00    0.00      19         __utils_MOD_string_setopt [111]
+-----------------------------------------------
+                0.00    0.00       1/18          __init_MOD_init_main [24]
+                0.00    0.00       1/18          __mat_mass_MOD_mat_mass_init [30]
+                0.00    0.00       1/18          __receivers_MOD_rec_init [39]
+                0.00    0.00       2/18          __bc_abso_MOD_bc_abso_init [127]
+                0.00    0.00       2/18          __mat_gen_MOD_mat_init_work [32]
+                0.00    0.00       2/18          __spec_grid_MOD_se_init [28]
+                0.00    0.00       3/18          __fields_class_MOD___copy_fields_class_Fields_type [124]
+                0.00    0.00       3/18          __mat_gen_MOD_mat_init_prop [31]
+                0.00    0.00       3/18          __mesh_cartesian_MOD_cart_build [157]
+[112]    0.0    0.00    0.00      18         __memory_info_MOD_memo_echo [112]
+                0.00    0.00      18/141         __stdio_MOD_io_new_unit [95]
+-----------------------------------------------
+                0.00    0.00       5/13          __bc_dynflt_swf_MOD_swf_init [140]
+                0.00    0.00       8/13          __bc_dynflt_MOD_bc_dynflt_init [35]
+[113]    0.0    0.00    0.00      13         __distribution_cd_MOD_dist_cd_init_1 [113]
+-----------------------------------------------
+                0.00    0.00      10/10          __spec_grid_MOD_se_find_point [38]
+[114]    0.0    0.00    0.00      10         __spec_grid_MOD_se_find_nearest_node [114]
+-----------------------------------------------
+                0.00    0.00      10/10          __receivers_MOD_rec_init [39]
+[115]    0.0    0.00    0.00      10         __spec_grid_MOD_se_init_interpol [115]
+                0.00    0.00     300/300         __gll_MOD_hgll [94]
+-----------------------------------------------
+                0.00    0.00      10/10          __spec_grid_MOD_se_find_point [38]
+[116]    0.0    0.00    0.00      10         __spec_grid_MOD_se_node_belongs_to_2 [116]
+-----------------------------------------------
+                0.00    0.00       6/6           __plot_postscript_MOD_plot_ps [131]
+[117]    0.0    0.00    0.00       6         __plot_gmt_MOD_plot_gmt_init [117]
+-----------------------------------------------
+                0.00    0.00       5/5           __mat_elastic_MOD_mat_elast_read [155]
+[118]    0.0    0.00    0.00       5         __prop_mat_MOD_mat_setprop_input [118]
+-----------------------------------------------
+                0.00    0.00       1/5           __utils_MOD_unique [178]
+                0.00    0.00       4/5           __spec_grid_MOD_se_init [28]
+[119]    0.0    0.00    0.00       5         __utils_MOD_drank [119]
+-----------------------------------------------
+                0.00    0.00       1/4           __bc_dirneu_MOD_bc_dirneu_init [135]
+                0.00    0.00       1/4           __bc_dynflt_MOD_bc_dynflt_init [35]
+                0.00    0.00       2/4           __bc_abso_MOD_bc_abso_init [127]
+[120]    0.0    0.00    0.00       4         __bc_periodic_MOD_bc_perio_intersects [120]
+-----------------------------------------------
+                0.00    0.00       1/4           __bc_dirneu_MOD_bc_dirneu_init [135]
+                0.00    0.00       1/4           __bc_dynflt_MOD_bc_dynflt_init [35]
+                0.00    0.00       2/4           __bc_abso_MOD_bc_abso_init [127]
+[121]    0.0    0.00    0.00       4         __spec_grid_MOD_bc_get_normal_and_weights [121]
+                0.00    0.00    2400/464423      __fem_grid_MOD_fe_getelementcoord [52]
+                0.00    0.00     480/13524       __spec_grid_MOD_se_inquire [69]
+-----------------------------------------------
+                0.00    0.00       1/4           __bc_dirneu_MOD_bc_dirneu_init [135]
+                0.00    0.00       1/4           __bc_dynflt_MOD_bc_dynflt_init [35]
+                0.00    0.00       2/4           __bc_abso_MOD_bc_abso_init [127]
+[122]    0.0    0.00    0.00       4         __spec_grid_MOD_bc_inquire [122]
+-----------------------------------------------
+                0.00    0.00       4/4           __bc_gen_MOD_bc_init [33]
+[123]    0.0    0.00    0.00       4         __spec_grid_MOD_bc_tag_exists [123]
+-----------------------------------------------
+                0.00    0.00       3/3           __fields_class_MOD_fields_init [150]
+[124]    0.0    0.00    0.00       3         __fields_class_MOD___copy_fields_class_Fields_type [124]
+                0.00    0.00       3/18          __memory_info_MOD_memo_echo [112]
+                0.00    0.00       3/26          __memory_info_MOD_storearray [105]
+-----------------------------------------------
+                0.00    0.00       3/3           __mat_elastic_MOD_mat_elast_read [155]
+[125]    0.0    0.00    0.00       3         __prop_mat_MOD_mat_setkind [125]
+-----------------------------------------------
+                0.00    0.00       1/3           __bc_dynflt_MOD_bc_dynflt_init [35]
+                0.00    0.00       1/3           __init_MOD_init_main [24]
+                0.00    0.00       1/3           __receivers_MOD_rec_init [39]
+[126]    0.0    0.00    0.00       3         __time_evol_MOD_time_gettimestep [126]
+-----------------------------------------------
+                0.00    0.00       2/2           __bc_gen_MOD_bc_init [33]
+[127]    0.0    0.00    0.00       2         __bc_abso_MOD_bc_abso_init [127]
+                0.00    0.00    3600/3600        __prop_mat_MOD_mat_getprop_ij [82]
+                0.00    0.00    1200/1200        __spec_grid_MOD_se_jacobian_eij [91]
+                0.00    0.00     240/13524       __spec_grid_MOD_se_inquire [69]
+                0.00    0.00       2/4           __spec_grid_MOD_bc_inquire [122]
+                0.00    0.00       2/4           __bc_periodic_MOD_bc_perio_intersects [120]
+                0.00    0.00       2/4           __spec_grid_MOD_bc_get_normal_and_weights [121]
+                0.00    0.00       2/18          __memory_info_MOD_memo_echo [112]
+                0.00    0.00       2/26          __memory_info_MOD_storearray [105]
+                0.00    0.00       2/2           __time_evol_MOD_time_getcoefa2vrhs [133]
+-----------------------------------------------
+                0.00    0.00       2/2           __bc_gen_MOD_bc_read [143]
+[128]    0.0    0.00    0.00       2         __bc_abso_MOD_bc_abso_read [128]
+-----------------------------------------------
+                0.00    0.00       2/2           MAIN__ [1]
+[129]    0.0    0.00    0.00       2         __echo_MOD_echo_banner [129]
+-----------------------------------------------
+                0.00    0.00       2/2           __spec_grid_MOD_se_init [28]
+[130]    0.0    0.00    0.00       2         __fem_grid_MOD_fe_getnodesperelement [130]
+-----------------------------------------------
+                0.00    0.00       2/2           __init_MOD_init_main [24]
+[131]    0.0    0.00    0.00       2         __plot_postscript_MOD_plot_ps [131]
+                0.00    0.00       6/6           __plot_gmt_MOD_plot_gmt_init [117]
+                0.00    0.00       2/141         __stdio_MOD_io_new_unit [95]
+-----------------------------------------------
+                0.00    0.00       2/2           __rcmlib_MOD_genrcm [166]
+[132]    0.0    0.00    0.00       2         __rcmlib_MOD_level_set [132]
+-----------------------------------------------
+                0.00    0.00       2/2           __bc_abso_MOD_bc_abso_init [127]
+[133]    0.0    0.00    0.00       2         __time_evol_MOD_time_getcoefa2vrhs [133]
+-----------------------------------------------
+                0.00    0.00       1/2           __bc_dynflt_MOD_bc_dynflt_init [35]
+                0.00    0.00       1/2           __receivers_MOD_rec_init [39]
+[134]    0.0    0.00    0.00       2         __time_evol_MOD_time_getnbtimesteps [134]
+-----------------------------------------------
+                0.00    0.00       1/1           __bc_gen_MOD_bc_init [33]
+[135]    0.0    0.00    0.00       1         __bc_dirneu_MOD_bc_dirneu_init [135]
+                0.00    0.00       1/4           __spec_grid_MOD_bc_inquire [122]
+                0.00    0.00       1/4           __bc_periodic_MOD_bc_perio_intersects [120]
+                0.00    0.00       1/4           __spec_grid_MOD_bc_get_normal_and_weights [121]
+-----------------------------------------------
+                0.00    0.00       1/1           __bc_gen_MOD_bc_read [143]
+[136]    0.0    0.00    0.00       1         __bc_dirneu_MOD_bc_dirneu_read [136]
+-----------------------------------------------
+                0.00    0.00       1/1           __bc_gen_MOD_bc_read [143]
+[137]    0.0    0.00    0.00       1         __bc_dynflt_MOD_bc_dynflt_read [137]
+                0.00    0.00       9/19          __distribution_cd_MOD_dist_cd_read [109]
+                0.00    0.00       1/1           __bc_dynflt_swf_MOD_swf_read [141]
+                0.00    0.00       1/1           __bc_dynflt_normal_MOD_normal_read [139]
+                0.00    0.00       1/1           __bc_dynflt_twf_MOD_twf_read [142]
+-----------------------------------------------
+                0.00    0.00       1/1           __bc_dynflt_MOD_bc_dynflt_init [35]
+[138]    0.0    0.00    0.00       1         __bc_dynflt_normal_MOD_normal_init [138]
+-----------------------------------------------
+                0.00    0.00       1/1           __bc_dynflt_MOD_bc_dynflt_read [137]
+[139]    0.0    0.00    0.00       1         __bc_dynflt_normal_MOD_normal_read [139]
+-----------------------------------------------
+                0.00    0.00       1/1           __bc_dynflt_MOD_bc_dynflt_init [35]
+[140]    0.0    0.00    0.00       1         __bc_dynflt_swf_MOD_swf_init [140]
+                0.00    0.00       5/13          __distribution_cd_MOD_dist_cd_init_1 [113]
+-----------------------------------------------
+                0.00    0.00       1/1           __bc_dynflt_MOD_bc_dynflt_read [137]
+[141]    0.0    0.00    0.00       1         __bc_dynflt_swf_MOD_swf_read [141]
+                0.00    0.00       5/19          __distribution_cd_MOD_dist_cd_read [109]
+-----------------------------------------------
+                0.00    0.00       1/1           __bc_dynflt_MOD_bc_dynflt_read [137]
+[142]    0.0    0.00    0.00       1         __bc_dynflt_twf_MOD_twf_read [142]
+-----------------------------------------------
+                0.00    0.00       1/1           __input_MOD_read_main [154]
+[143]    0.0    0.00    0.00       1         __bc_gen_MOD_bc_read [143]
+                0.00    0.00       2/2           __bc_abso_MOD_bc_abso_read [128]
+                0.00    0.00       1/1           __bc_dynflt_MOD_bc_dynflt_read [137]
+                0.00    0.00       1/1           __bc_dirneu_MOD_bc_dirneu_read [136]
+-----------------------------------------------
+                0.00    0.00       1/1           __input_MOD_read_main [154]
+[144]    0.0    0.00    0.00       1         __echo_MOD_echo_set [144]
+-----------------------------------------------
+                0.00    0.00       1/1           __spec_grid_MOD_se_init [28]
+[145]    0.0    0.00    0.00       1         __fem_grid_MOD_fe_getnbelements [145]
+-----------------------------------------------
+                0.00    0.00       1/1           __spec_grid_MOD_se_init [28]
+[146]    0.0    0.00    0.00       1         __fem_grid_MOD_fe_getnbnodes [146]
+-----------------------------------------------
+                0.00    0.00       1/1           __mesh_structured_MOD_mesh_structured_renumber [163]
+[147]    0.0    0.00    0.00       1         __fem_grid_MOD_fe_reorder [147]
+-----------------------------------------------
+                0.00    0.00       1/1           __fem_grid_MOD_fe_getedgeconn [67]
+[148]    0.0    0.00    0.00       1         __fem_grid_MOD_fe_setconnectivity [148]
+                0.00    0.00   64241/66653       __generic_list_MOD_li_remove_head [58]
+                0.00    0.00   64241/98169       __generic_list_MOD_li_associated [57]
+                0.00    0.00   51200/53608       __generic_list_MOD_li_add_to_head [65]
+                0.00    0.00   13041/13049       __generic_list_MOD_li_init_list [70]
+                0.00    0.00   13041/13041       __generic_list_MOD_li_get_len [72]
+-----------------------------------------------
+                0.00    0.00       1/1           __spec_grid_MOD_se_init [28]
+[149]    0.0    0.00    0.00       1         __fem_grid_MOD_fe_unsetconnectivity [149]
+-----------------------------------------------
+                0.00    0.00       1/1           __init_MOD_init_main [24]
+[150]    0.0    0.00    0.00       1         __fields_class_MOD_fields_init [150]
+                0.00    0.00       3/3           __fields_class_MOD___copy_fields_class_Fields_type [124]
+-----------------------------------------------
+                0.00    0.00       1/1           __spec_grid_MOD_se_init [28]
+[151]    0.0    0.00    0.00       1         __gll_MOD_get_gll_info [151]
+                0.00    0.00      25/25          __gll_MOD_hdgll [108]
+                0.00    0.00       1/1           __gll_MOD_zwgljd [153]
+-----------------------------------------------
+                0.00    0.00       1/1           __spec_grid_MOD_se_init [28]
+[152]    0.0    0.00    0.00       1         __gll_MOD_print_gll_a [152]
+                0.00    0.00       1/141         __stdio_MOD_io_new_unit [95]
+-----------------------------------------------
+                0.00    0.00       1/1           __gll_MOD_get_gll_info [151]
+[153]    0.0    0.00    0.00       1         __gll_MOD_zwgljd [153]
+                0.00    0.00      19/19          __generic_list_MOD_li_check_list [110]
+-----------------------------------------------
+                0.00    0.00       1/1           MAIN__ [1]
+[154]    0.0    0.00    0.00       1         __input_MOD_read_main [154]
+                0.00    0.00       1/141         __stdio_MOD_io_new_unit [95]
+                0.00    0.00       1/1           __echo_MOD_echo_set [144]
+                0.00    0.00       1/1           __time_evol_MOD_time_read [177]
+                0.00    0.00       1/1           __mesh_gen_MOD_mesh_read [160]
+                0.00    0.00       1/1           __mat_gen_MOD_mat_read [156]
+                0.00    0.00       1/1           __bc_gen_MOD_bc_read [143]
+                0.00    0.00       1/1           __sources_MOD_so_read [170]
+                0.00    0.00       1/1           __receivers_MOD_rec_read [168]
+                0.00    0.00       1/1           __plot_gen_MOD_read_plot_gen [165]
+-----------------------------------------------
+                0.00    0.00       1/1           __mat_gen_MOD_mat_read [156]
+[155]    0.0    0.00    0.00       1         __mat_elastic_MOD_mat_elast_read [155]
+                0.00    0.00       5/19          __distribution_cd_MOD_dist_cd_read [109]
+                0.00    0.00       5/5           __prop_mat_MOD_mat_setprop_input [118]
+                0.00    0.00       3/3           __prop_mat_MOD_mat_setkind [125]
+-----------------------------------------------
+                0.00    0.00       1/1           __input_MOD_read_main [154]
+[156]    0.0    0.00    0.00       1         __mat_gen_MOD_mat_read [156]
+                0.00    0.00       1/1           __mat_elastic_MOD_mat_elast_read [155]
+-----------------------------------------------
+                0.00    0.00       1/1           __mesh_gen_MOD_mesh_build [159]
+[157]    0.0    0.00    0.00       1         __mesh_cartesian_MOD_cart_build [157]
+                0.00    0.00   12800/64480       __utils_MOD_sub2ind [59]
+                0.00    0.00       3/18          __memory_info_MOD_memo_echo [112]
+                0.00    0.00       3/26          __memory_info_MOD_storearray [105]
+                0.00    0.00       1/1           __mesh_structured_MOD_mesh_structured_connectivity [162]
+                0.00    0.00       1/1           __mesh_structured_MOD_mesh_structured_boundaries [161]
+-----------------------------------------------
+                0.00    0.00       1/1           __mesh_gen_MOD_mesh_read [160]
+[158]    0.0    0.00    0.00       1         __mesh_cartesian_MOD_cart_read [158]
+-----------------------------------------------
+                0.00    0.00       1/1           __init_MOD_init_main [24]
+[159]    0.0    0.00    0.00       1         __mesh_gen_MOD_mesh_build [159]
+                0.00    0.00       2/141         __stdio_MOD_io_new_unit [95]
+                0.00    0.00       1/1           __mesh_structured_MOD_mesh_structured_renumber [163]
+                0.00    0.00       1/1           __mesh_cartesian_MOD_cart_build [157]
+-----------------------------------------------
+                0.00    0.00       1/1           __input_MOD_read_main [154]
+[160]    0.0    0.00    0.00       1         __mesh_gen_MOD_mesh_read [160]
+                0.00    0.00       1/1           __mesh_cartesian_MOD_cart_read [158]
+-----------------------------------------------
+                0.00    0.00       1/1           __mesh_cartesian_MOD_cart_build [157]
+[161]    0.0    0.00    0.00       1         __mesh_structured_MOD_mesh_structured_boundaries [161]
+                0.00    0.00     480/64480       __utils_MOD_sub2ind [59]
+-----------------------------------------------
+                0.00    0.00       1/1           __mesh_cartesian_MOD_cart_build [157]
+[162]    0.0    0.00    0.00       1         __mesh_structured_MOD_mesh_structured_connectivity [162]
+                0.00    0.00   51200/64480       __utils_MOD_sub2ind [59]
+-----------------------------------------------
+                0.00    0.00       1/1           __mesh_gen_MOD_mesh_build [159]
+[163]    0.0    0.00    0.00       1         __mesh_structured_MOD_mesh_structured_renumber [163]
+                0.00    0.00  102400/102400      __utils_MOD_sub2ind_b [56]
+                0.00    0.00       1/1           __rcmlib_MOD_genrcm [166]
+                0.00    0.00       1/1           __rcmlib_MOD_perm_inverse [167]
+                0.00    0.00       1/1           __fem_grid_MOD_fe_reorder [147]
+-----------------------------------------------
+                0.00    0.00       1/1           __init_MOD_init_main [24]
+[164]    0.0    0.00    0.00       1         __plot_gen_MOD_plot_init [164]
+-----------------------------------------------
+                0.00    0.00       1/1           __input_MOD_read_main [154]
+[165]    0.0    0.00    0.00       1         __plot_gen_MOD_read_plot_gen [165]
+-----------------------------------------------
+                0.00    0.00       1/1           __mesh_structured_MOD_mesh_structured_renumber [163]
+[166]    0.0    0.00    0.00       1         __rcmlib_MOD_genrcm [166]
+                0.00    0.00       2/2           __rcmlib_MOD_level_set [132]
+-----------------------------------------------
+                0.00    0.00       1/1           __mesh_structured_MOD_mesh_structured_renumber [163]
+[167]    0.0    0.00    0.00       1         __rcmlib_MOD_perm_inverse [167]
+-----------------------------------------------
+                0.00    0.00       1/1           __input_MOD_read_main [154]
+[168]    0.0    0.00    0.00       1         __receivers_MOD_rec_read [168]
+-----------------------------------------------
+                0.00    0.00       1/1           MAIN__ [1]
+[169]    0.0    0.00    0.00       1         __receivers_MOD_rec_write [169]
+                0.00    0.00       1/141         __stdio_MOD_io_new_unit [95]
+-----------------------------------------------
+                0.00    0.00       1/1           __input_MOD_read_main [154]
+[170]    0.0    0.00    0.00       1         __sources_MOD_so_read [170]
+-----------------------------------------------
+                0.00    0.00       1/1           __mat_gen_MOD_mat_init_work [32]
+[171]    0.0    0.00    0.00       1         __spec_grid_MOD_se_firstelementtagged [171]
+                0.00    0.00       1/1           __utils_MOD_unique [178]
+-----------------------------------------------
+                0.00    0.00       1/1           __mat_gen_MOD_mat_init_work [32]
+[172]    0.0    0.00    0.00       1         __spec_grid_MOD_se_isflat [172]
+-----------------------------------------------
+                0.00    0.00       1/1           __bc_dynflt_MOD_bc_dynflt_init [35]
+[173]    0.0    0.00    0.00       1         __time_evol_MOD_time_getcoefa2d [173]
+-----------------------------------------------
+                0.00    0.00       1/1           __bc_dynflt_MOD_bc_dynflt_init [35]
+[174]    0.0    0.00    0.00       1         __time_evol_MOD_time_getcoefa2v [174]
+-----------------------------------------------
+                0.00    0.00       1/1           __init_MOD_init_main [24]
+[175]    0.0    0.00    0.00       1         __time_evol_MOD_time_init [175]
+-----------------------------------------------
+                0.00    0.00       1/1           __init_MOD_init_main [24]
+[176]    0.0    0.00    0.00       1         __time_evol_MOD_time_needsalphafield [176]
+-----------------------------------------------
+                0.00    0.00       1/1           __input_MOD_read_main [154]
+[177]    0.0    0.00    0.00       1         __time_evol_MOD_time_read [177]
+-----------------------------------------------
+                0.00    0.00       1/1           __spec_grid_MOD_se_firstelementtagged [171]
+[178]    0.0    0.00    0.00       1         __utils_MOD_unique [178]
+                0.00    0.00       1/5           __utils_MOD_drank [119]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function is in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+Copyright (C) 2012-2024 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Index by function name
+
+   [1] MAIN__ (main.f90)      [65] __generic_list_MOD_li_add_to_head [63] __prop_elem_MOD_prop_size
+  [80] __bc_abso_MOD_bc_abso_apply [57] __generic_list_MOD_li_associated [50] __prop_mat_MOD_mat_getprop_e
+ [127] __bc_abso_MOD_bc_abso_init [110] __generic_list_MOD_li_check_list [82] __prop_mat_MOD_mat_getprop_ij
+ [128] __bc_abso_MOD_bc_abso_read [92] __generic_list_MOD_li_get_head [19] __prop_mat_MOD_mat_iskind_elem
+  [85] __bc_dirneu_MOD_bc_dirneu_apply [72] __generic_list_MOD_li_get_len [78] __prop_mat_MOD_mat_isprop_input
+ [135] __bc_dirneu_MOD_bc_dirneu_init [66] __generic_list_MOD_li_get_next [125] __prop_mat_MOD_mat_setkind
+ [136] __bc_dirneu_MOD_bc_dirneu_read [70] __generic_list_MOD_li_init_list [64] __prop_mat_MOD_mat_setprop_elem_from_input
+  [21] __bc_dynflt_MOD___copy_bc_dynflt_Bc_dynflt_input_type [58] __generic_list_MOD_li_remove_head [79] __prop_mat_MOD_mat_setprop_elem_ptr_input
+  [17] __bc_dynflt_MOD_bc_dynflt_apply [151] __gll_MOD_get_gll_info [118] __prop_mat_MOD_mat_setprop_input
+  [35] __bc_dynflt_MOD_bc_dynflt_init [108] __gll_MOD_hdgll [166] __rcmlib_MOD_genrcm
+ [137] __bc_dynflt_MOD_bc_dynflt_read [94] __gll_MOD_hgll [132] __rcmlib_MOD_level_set (rcm.f90)
+  [22] __bc_dynflt_MOD_bc_dynflt_write [152] __gll_MOD_print_gll_a [167] __rcmlib_MOD_perm_inverse
+  [86] __bc_dynflt_normal_MOD_normal_getsigma [153] __gll_MOD_zwgljd [39] __receivers_MOD_rec_init
+ [138] __bc_dynflt_normal_MOD_normal_init [24] __init_MOD_init_main [168] __receivers_MOD_rec_read
+ [139] __bc_dynflt_normal_MOD_normal_read [154] __input_MOD_read_main [84] __receivers_MOD_rec_store
+  [87] __bc_dynflt_normal_MOD_normal_update [101] __mat_damage_MOD_mat_anydamage [169] __receivers_MOD_rec_write
+ [140] __bc_dynflt_swf_MOD_swf_init [53] __mat_damage_MOD_mat_isdamage [4] __solver_MOD_compute_fint (solver.f90)
+  [27] __bc_dynflt_swf_MOD_swf_mu [9] __mat_elastic_MOD_mat_elast_add_25d_f [89] __solver_MOD_solve
+ [141] __bc_dynflt_swf_MOD_swf_read [6] __mat_elastic_MOD_mat_elast_f [3] __solver_MOD_solve_leapfrog (solver.f90)
+  [88] __bc_dynflt_swf_MOD_swf_update_state [34] __mat_elastic_MOD_mat_elast_init_elem_prop [90] __sources_MOD_so_add
+  [83] __bc_dynflt_twf_MOD_twf_mu [36] __mat_elastic_MOD_mat_elast_init_elem_work [170] __sources_MOD_so_read
+ [142] __bc_dynflt_twf_MOD_twf_read [155] __mat_elastic_MOD_mat_elast_read [16] __spec_grid_MOD___copy_spec_grid_Sem_grid_type
+  [73] __bc_gen_MOD___copy_bc_gen_Bc_type [25] __mat_elastic_MOD_mat_elast_stress [121] __spec_grid_MOD_bc_get_normal_and_weights
+  [18] __bc_gen_MOD_bc_apply  [47] __mat_elastic_MOD_mat_iselastic [122] __spec_grid_MOD_bc_inquire
+  [33] __bc_gen_MOD_bc_init   [76] __mat_elastic_MOD_mat_iselastichomogeneous [123] __spec_grid_MOD_bc_tag_exists
+ [143] __bc_gen_MOD_bc_read    [5] __mat_gen_MOD_mat_fint [68] __spec_grid_MOD_se_elem_coord
+  [23] __bc_gen_MOD_bc_write  [31] __mat_gen_MOD_mat_init_prop [114] __spec_grid_MOD_se_find_nearest_node
+ [120] __bc_periodic_MOD_bc_perio_intersects [32] __mat_gen_MOD_mat_init_work [38] __spec_grid_MOD_se_find_point
+ [113] __distribution_cd_MOD_dist_cd_init_1 [156] __mat_gen_MOD_mat_read [171] __spec_grid_MOD_se_firstelementtagged
+  [60] __distribution_cd_MOD_dist_cd_init_2 [14] __mat_gen_MOD_mat_strain_gen [93] __spec_grid_MOD_se_get_edge_nodes
+  [61] __distribution_cd_MOD_dist_cd_isdist [97] __mat_gen_MOD_mat_stress (mat_gen.f90) [28] __spec_grid_MOD_se_init
+ [109] __distribution_cd_MOD_dist_cd_read [11] __mat_gen_MOD_mat_stress_dv [115] __spec_grid_MOD_se_init_interpol
+ [129] __echo_MOD_echo_banner [102] __mat_gen_MOD_mat_write [69] __spec_grid_MOD_se_inquire
+ [144] __echo_MOD_echo_set    [48] __mat_kelvin_voigt_MOD_mat_iskelvinvoigt [15] __spec_grid_MOD_se_inversejacobian_e
+ [100] __elem_q4_MOD_q4_getdershape [30] __mat_mass_MOD_mat_mass_init [172] __spec_grid_MOD_se_isflat
+  [99] __elem_q4_MOD_q4_getshape [77] __mat_mass_MOD_mat_mass_init_elem_prop [91] __spec_grid_MOD_se_jacobian_eij
+ [104] __fem_grid_MOD___copy_fem_grid_Fem_grid_type [103] __mat_plastic_MOD_mat_anyplastic [116] __spec_grid_MOD_se_node_belongs_to_2
+  [37] __fem_grid_MOD_fe_find_point [54] __mat_plastic_MOD_mat_isplastic [29] __spec_grid_MOD_se_volumeweights_e
+ [106] __fem_grid_MOD_fe_getdershape [55] __mat_visco_MOD_mat_isvisco [98] __stdio_MOD_io_field_node_multi
+  [67] __fem_grid_MOD_fe_getedgeconn [112] __memory_info_MOD_memo_echo [96] __stdio_MOD_io_field_node_single
+  [52] __fem_grid_MOD_fe_getelementcoord [105] __memory_info_MOD_storearray [95] __stdio_MOD_io_new_unit
+  [74] __fem_grid_MOD_fe_getelementsizes [157] __mesh_cartesian_MOD_cart_build [173] __time_evol_MOD_time_getcoefa2d
+ [145] __fem_grid_MOD_fe_getnbelements [158] __mesh_cartesian_MOD_cart_read [174] __time_evol_MOD_time_getcoefa2v
+ [146] __fem_grid_MOD_fe_getnbnodes [159] __mesh_gen_MOD_mesh_build [133] __time_evol_MOD_time_getcoefa2vrhs
+ [130] __fem_grid_MOD_fe_getnodesperelement [160] __mesh_gen_MOD_mesh_read [134] __time_evol_MOD_time_getnbtimesteps
+ [107] __fem_grid_MOD_fe_getshape [161] __mesh_structured_MOD_mesh_structured_boundaries [126] __time_evol_MOD_time_gettimestep
+  [71] __fem_grid_MOD_fe_getvertexconn [162] __mesh_structured_MOD_mesh_structured_connectivity [175] __time_evol_MOD_time_init
+ [147] __fem_grid_MOD_fe_reorder [163] __mesh_structured_MOD_mesh_structured_renumber [176] __time_evol_MOD_time_needsalphafield
+ [148] __fem_grid_MOD_fe_setconnectivity [26] __mxmlib_MOD_mxm [177] __time_evol_MOD_time_read
+ [149] __fem_grid_MOD_fe_unsetconnectivity [12] __plot_gen_MOD_plot_field [119] __utils_MOD_drank
+ [124] __fields_class_MOD___copy_fields_class_Fields_type [164] __plot_gen_MOD_plot_init [20] __utils_MOD_invert2
+  [75] __fields_class_MOD_field_add_elem_1 [165] __plot_gen_MOD_read_plot_gen [111] __utils_MOD_string_setopt
+   [8] __fields_class_MOD_field_add_elem_2 [117] __plot_gmt_MOD_plot_gmt_init [59] __utils_MOD_sub2ind
+  [51] __fields_class_MOD_field_get_elem_2 [131] __plot_postscript_MOD_plot_ps [56] __utils_MOD_sub2ind_b
+   [7] __fields_class_MOD_field_get_elem_sub [49] __prop_elem_MOD_prop_get_1 [178] __utils_MOD_unique
+  [13] __fields_class_MOD_field_strain_elem [81] __prop_elem_MOD_prop_get_ij_1 [10] _init
+ [150] __fields_class_MOD_fields_init [62] __prop_elem_MOD_prop_set_cd1
