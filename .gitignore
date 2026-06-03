@@ -1,3 +1,11 @@
-
 JUPYTER/.DS_Store
 *.pyc
+*.o
+*.mod
+gmon.out
+perf.data
+sem2dsolve
+bin/
+build/
+.DS_Store
+profiling_runs/
