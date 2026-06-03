@@ -10,7 +10,7 @@ mkdir -p ~/bin
 # Modify Makefile to use gfortran and enable gprof profiling
 sed -i 's|^F90 = .*|F90 = gfortran|' SRC/Makefile
 sed -i 's|^OPT = .*|OPT = -O3 -g -fno-omit-frame-pointer -ffree-line-length-none -pg|' SRC/Makefile
-sed -i 's|EXEC = .*|EXEC = ~/bin/sem2dsolve|' SRC/Makefile
+
 
 # Build the executable
 cd SRC
