@@ -50,8 +50,8 @@ EXEC = $(HOME)/bin/sem2dsolve
 #OPT = -O0 -Wall -g -fbacktrace -fbounds-check
 
 #-- Intel Fortran --
-F90 = ifort
-OPT = -O3 -ip -ipo -unroll
+F90 = gfortran
+OPT = -O3 -g -fno-omit-frame-pointer -ffree-line-length-none
 #-no-inline-factor
 #OPT = -O3
 #OPT = -O0 -warn all -C -traceback

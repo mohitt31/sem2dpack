@@ -11,6 +11,7 @@
 #else
 #define SIMDE_ENABLE_NATIVE_ALIASES
 #include "simde/x86/avx2.h"
+#include "simde/x86/fma.h"
 #endif
 
 const int NGLL = 5;
@@ -89,31 +90,93 @@ void elast_kd2_psv_opt(
     int tail
 ) {
     for (int b = 0; b < nbatch; ++b) {
-        // Mohit: batched 5x5 apply (Stage 1 = plain FMA triple loop, no even-odd) goes here
-        // Example plumbing:
-        // __m256d h_ik = _mm256_set1_pd(H[i][k]);
-        // __m256d ux   = _mm256_loadu_pd(&displ_b[b][k][j][0][0]);
-        // _mm256_storeu_pd(&f_b[b][i][j][0][0], f0);
-        
-        // Fallback: unpack and call scalar reference for harness testing
-        double d_tmp[NGLL][NGLL][2];
-        double a_tmp[NGLL][NGLL][6];
-        double f_tmp[NGLL][NGLL][2];
+        // gradients: [i][j] each a __m256d (4 elements per lane)
+        __m256d dUx_dxi[5][5], dUz_dxi[5][5], dUx_deta[5][5], dUz_deta[5][5];
 
-        for (int l = 0; l < W; ++l) {
-            for (int i = 0; i < NGLL; ++i) {
-                for (int j = 0; j < NGLL; ++j) {
-                    for (int d = 0; d < 2; ++d) d_tmp[i][j][d] = displ_b[b][i][j][d][l];
-                    for (int c = 0; c < 6; ++c) a_tmp[i][j][c] = a_b[b][i][j][c][l];
+        for (int i = 0; i < 5; ++i)
+            for (int j = 0; j < 5; ++j) {
+                __m256d gx_xi  = _mm256_setzero_pd();
+                __m256d gz_xi  = _mm256_setzero_pd();
+                __m256d gx_eta = _mm256_setzero_pd();
+                __m256d gz_eta = _mm256_setzero_pd();
+                for (int k = 0; k < 5; ++k) {
+                    // left-multiply  Ht*U : scalar Ht[i][k], vector U[k][j]
+                    __m256d ht = _mm256_set1_pd(Ht[i][k]);
+                    gx_xi = _mm256_fmadd_pd(ht, _mm256_loadu_pd(&displ_b[b][k][j][0][0]), gx_xi);
+                    gz_xi = _mm256_fmadd_pd(ht, _mm256_loadu_pd(&displ_b[b][k][j][1][0]), gz_xi);
+                    // right-multiply U*H : scalar H[k][j], vector U[i][k]
+                    __m256d hh = _mm256_set1_pd(H[k][j]);
+                    gx_eta = _mm256_fmadd_pd(hh, _mm256_loadu_pd(&displ_b[b][i][k][0][0]), gx_eta);
+                    gz_eta = _mm256_fmadd_pd(hh, _mm256_loadu_pd(&displ_b[b][i][k][1][0]), gz_eta);
                 }
+                dUx_dxi[i][j]  = gx_xi;
+                dUz_dxi[i][j]  = gz_xi;
+                dUx_deta[i][j] = gx_eta;
+                dUz_deta[i][j] = gz_eta;
             }
-            elast_kd2_psv_ref_single(d_tmp, a_tmp, H, Ht, f_tmp);
-            for (int i = 0; i < NGLL; ++i) {
-                for (int j = 0; j < NGLL; ++j) {
-                    for (int d = 0; d < 2; ++d) f_b[b][i][j][d][l] = f_tmp[i][j][d];
-                }
+
+        // forces (nelast=6). a index map: a1..a6 -> a_b[...][0..5][...]
+        __m256d tmp[5][5];
+
+        // f_x part 1: tmp = a1*dUx_dxi + a2*dUz_deta ; fx = H*tmp
+        for (int i = 0; i < 5; ++i)
+            for (int j = 0; j < 5; ++j) {
+                __m256d a1 = _mm256_loadu_pd(&a_b[b][i][j][0][0]);
+                __m256d a2 = _mm256_loadu_pd(&a_b[b][i][j][1][0]);
+                tmp[i][j] = _mm256_fmadd_pd(a1, dUx_dxi[i][j],
+                            _mm256_mul_pd(a2, dUz_deta[i][j]));
             }
-        }
+        for (int i = 0; i < 5; ++i)
+            for (int j = 0; j < 5; ++j) {
+                __m256d acc = _mm256_setzero_pd();
+                for (int k = 0; k < 5; ++k)  // H*tmp : scalar H[i][k], vector tmp[k][j]
+                    acc = _mm256_fmadd_pd(_mm256_set1_pd(H[i][k]), tmp[k][j], acc);
+                _mm256_storeu_pd(&f_b[b][i][j][0][0], acc);
+            }
+        // f_x part 2: tmp = a4*(dUx_deta + dUz_dxi) ; fx += tmp*Ht
+        for (int i = 0; i < 5; ++i)
+            for (int j = 0; j < 5; ++j) {
+                __m256d a4 = _mm256_loadu_pd(&a_b[b][i][j][3][0]);
+                tmp[i][j] = _mm256_mul_pd(a4, _mm256_add_pd(dUx_deta[i][j], dUz_dxi[i][j]));
+            }
+        for (int i = 0; i < 5; ++i)
+            for (int j = 0; j < 5; ++j) {
+                __m256d acc = _mm256_loadu_pd(&f_b[b][i][j][0][0]);
+                for (int k = 0; k < 5; ++k)  // tmp*Ht : scalar Ht[k][j], vector tmp[i][k]
+                    acc = _mm256_fmadd_pd(_mm256_set1_pd(Ht[k][j]), tmp[i][k], acc);
+                _mm256_storeu_pd(&f_b[b][i][j][0][0], acc);
+            }
+
+        // f_z part 1: tmp = a5*dUx_deta + a6*dUz_dxi ; fz = H*tmp
+        for (int i = 0; i < 5; ++i)
+            for (int j = 0; j < 5; ++j) {
+                __m256d a5 = _mm256_loadu_pd(&a_b[b][i][j][4][0]);
+                __m256d a6 = _mm256_loadu_pd(&a_b[b][i][j][5][0]);
+                tmp[i][j] = _mm256_fmadd_pd(a5, dUx_deta[i][j],
+                            _mm256_mul_pd(a6, dUz_dxi[i][j]));
+            }
+        for (int i = 0; i < 5; ++i)
+            for (int j = 0; j < 5; ++j) {
+                __m256d acc = _mm256_setzero_pd();
+                for (int k = 0; k < 5; ++k)  // H*tmp
+                    acc = _mm256_fmadd_pd(_mm256_set1_pd(H[i][k]), tmp[k][j], acc);
+                _mm256_storeu_pd(&f_b[b][i][j][1][0], acc);
+            }
+        // f_z part 2: tmp = a2*dUx_dxi + a3*dUz_deta ; fz += tmp*Ht
+        for (int i = 0; i < 5; ++i)
+            for (int j = 0; j < 5; ++j) {
+                __m256d a2 = _mm256_loadu_pd(&a_b[b][i][j][1][0]);
+                __m256d a3 = _mm256_loadu_pd(&a_b[b][i][j][2][0]);
+                tmp[i][j] = _mm256_fmadd_pd(a2, dUx_dxi[i][j],
+                            _mm256_mul_pd(a3, dUz_deta[i][j]));
+            }
+        for (int i = 0; i < 5; ++i)
+            for (int j = 0; j < 5; ++j) {
+                __m256d acc = _mm256_loadu_pd(&f_b[b][i][j][1][0]);
+                for (int k = 0; k < 5; ++k)  // tmp*Ht
+                    acc = _mm256_fmadd_pd(_mm256_set1_pd(Ht[k][j]), tmp[i][k], acc);
+                _mm256_storeu_pd(&f_b[b][i][j][1][0], acc);
+            }
     }
     
     // Tail processing for remainder elements
@@ -226,6 +289,20 @@ int main() {
             }
         }
     }
+
+    std::cout << "Sample f values for element 0:\n";
+    std::cout << "Node(i,j) Comp | Reference f          | Optimized f        \n";
+    std::cout << "---------------------------------------------------------\n";
+    for (int i = 0; i < 2; ++i) {
+        for (int j = 0; j < 2; ++j) {
+            for (int d = 0; d < 2; ++d) {
+                std::cout << "(" << i << "," << j << ")     " << d << "    | " 
+                          << std::setw(20) << f_ref[0][i][j][d] << " | " 
+                          << std::setw(20) << f_opt[0][i][j][d] << "\n";
+            }
+        }
+    }
+    std::cout << "\n";
 
     double max_abs_diff = 0.0;
     double max_rel_diff = 0.0;
