@@ -54,7 +54,7 @@ void elast_kd2_psv_ref_single(
         for (int k = 0; k < NGLL; ++k) {
             for (int i = 0; i < NGLL; ++i) {
                 f[i][j][0] += H[i][k] * ( a[k][j][0]*dUx_dxi[k][j] + a[k][j][1]*dUz_deta[k][j] )
-                            + ( a[i][k][3]*dUx_deta[i][k] + a[i][k][4]*dUz_dxi[i][k] ) * Ht[k][j];
+                            + a[i][k][3] * (dUx_deta[i][k] + dUz_dxi[i][k]) * Ht[k][j];
                                
                 f[i][j][1] += H[i][k] * ( a[k][j][4]*dUx_deta[k][j] + a[k][j][5]*dUz_dxi[k][j] )
                             + ( a[i][k][1]*dUx_dxi[i][k] + a[i][k][2]*dUz_deta[i][k] ) * Ht[k][j];
