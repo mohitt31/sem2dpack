@@ -76,6 +76,70 @@ void elast_kd2_psv_ref(
     }
 }
 
+// Folded operator coefficients (5x5 centro-antisymmetric M). Indices 0..2 only.
+struct EOfold { double p0[3], p1[3], c[3], m0[3], m1[3]; };
+
+// LEFT apply y = M*x : fold COLUMNS of M
+static EOfold fold_cols(const double M[5][5]){
+    EOfold f;
+    for(int i=0;i<3;++i){
+        f.p0[i]=M[i][0]+M[i][4]; f.p1[i]=M[i][1]+M[i][3]; f.c[i]=M[i][2];
+        f.m0[i]=M[i][0]-M[i][4]; f.m1[i]=M[i][1]-M[i][3];
+    }
+    return f;
+}
+// RIGHT apply y = x*M : fold ROWS of M
+static EOfold fold_rows(const double M[5][5]){
+    EOfold f;
+    for(int j=0;j<3;++j){
+        f.p0[j]=M[0][j]+M[4][j]; f.p1[j]=M[1][j]+M[3][j]; f.c[j]=M[2][j];
+        f.m0[j]=M[0][j]-M[4][j]; f.m1[j]=M[1][j]-M[3][j];
+    }
+    return f;
+}
+
+// y = M * x  (each column of x)
+static inline void eo_left(const EOfold& F, const __m256d x[5][5], __m256d y[5][5]){
+    const __m256d half=_mm256_set1_pd(0.5);
+    for(int j=0;j<5;++j){
+        __m256d xs0=_mm256_add_pd(x[0][j],x[4][j]);
+        __m256d xs1=_mm256_add_pd(x[1][j],x[3][j]);
+        __m256d xc2=_mm256_add_pd(x[2][j],x[2][j]);      // 2*x2
+        __m256d xa0=_mm256_sub_pd(x[0][j],x[4][j]);
+        __m256d xa1=_mm256_sub_pd(x[1][j],x[3][j]);
+        for(int i=0;i<3;++i){
+            __m256d S=_mm256_mul_pd(_mm256_set1_pd(F.p0[i]),xs0);
+            S=_mm256_fmadd_pd(_mm256_set1_pd(F.p1[i]),xs1,S);
+            S=_mm256_fmadd_pd(_mm256_set1_pd(F.c[i]),xc2,S);
+            __m256d A=_mm256_mul_pd(_mm256_set1_pd(F.m0[i]),xa0);
+            A=_mm256_fmadd_pd(_mm256_set1_pd(F.m1[i]),xa1,A);
+            y[i][j]=_mm256_mul_pd(_mm256_add_pd(A,S),half);
+            if(i<2) y[4-i][j]=_mm256_mul_pd(_mm256_sub_pd(A,S),half);
+        }
+    }
+}
+
+// y = x * M  (each row of x)
+static inline void eo_right(const EOfold& F, const __m256d x[5][5], __m256d y[5][5]){
+    const __m256d half=_mm256_set1_pd(0.5);
+    for(int i=0;i<5;++i){
+        __m256d us0=_mm256_add_pd(x[i][0],x[i][4]);
+        __m256d us1=_mm256_add_pd(x[i][1],x[i][3]);
+        __m256d uc2=_mm256_add_pd(x[i][2],x[i][2]);
+        __m256d ua0=_mm256_sub_pd(x[i][0],x[i][4]);
+        __m256d ua1=_mm256_sub_pd(x[i][1],x[i][3]);
+        for(int j=0;j<3;++j){
+            __m256d S=_mm256_mul_pd(_mm256_set1_pd(F.p0[j]),us0);
+            S=_mm256_fmadd_pd(_mm256_set1_pd(F.p1[j]),us1,S);
+            S=_mm256_fmadd_pd(_mm256_set1_pd(F.c[j]),uc2,S);
+            __m256d A=_mm256_mul_pd(_mm256_set1_pd(F.m0[j]),ua0);
+            A=_mm256_fmadd_pd(_mm256_set1_pd(F.m1[j]),ua1,A);
+            y[i][j]=_mm256_mul_pd(_mm256_add_pd(A,S),half);
+            if(j<2) y[i][4-j]=_mm256_mul_pd(_mm256_sub_pd(A,S),half);
+        }
+    }
+}
+
 // STUB for optimized kernel
 void elast_kd2_psv_opt(
     const double displ_b[][NGLL][NGLL][2][W],
@@ -89,94 +153,63 @@ void elast_kd2_psv_opt(
     int nbatch,
     int tail
 ) {
-    for (int b = 0; b < nbatch; ++b) {
-        // gradients: [i][j] each a __m256d (4 elements per lane)
-        __m256d dUx_dxi[5][5], dUz_dxi[5][5], dUx_deta[5][5], dUz_deta[5][5];
+    const EOfold Hcol  = fold_cols(H);    // for H * x   (left)
+    const EOfold Htcol = fold_cols(Ht);   // for Ht * x  (left)
+    const EOfold Hrow  = fold_rows(H);    // for x * H   (right)
+    const EOfold Htrow = fold_rows(Ht);   // for x * Ht  (right)
 
-        for (int i = 0; i < 5; ++i)
-            for (int j = 0; j < 5; ++j) {
-                __m256d gx_xi  = _mm256_setzero_pd();
-                __m256d gz_xi  = _mm256_setzero_pd();
-                __m256d gx_eta = _mm256_setzero_pd();
-                __m256d gz_eta = _mm256_setzero_pd();
-                for (int k = 0; k < 5; ++k) {
-                    // left-multiply  Ht*U : scalar Ht[i][k], vector U[k][j]
-                    __m256d ht = _mm256_set1_pd(Ht[i][k]);
-                    gx_xi = _mm256_fmadd_pd(ht, _mm256_loadu_pd(&displ_b[b][k][j][0][0]), gx_xi);
-                    gz_xi = _mm256_fmadd_pd(ht, _mm256_loadu_pd(&displ_b[b][k][j][1][0]), gz_xi);
-                    // right-multiply U*H : scalar H[k][j], vector U[i][k]
-                    __m256d hh = _mm256_set1_pd(H[k][j]);
-                    gx_eta = _mm256_fmadd_pd(hh, _mm256_loadu_pd(&displ_b[b][i][k][0][0]), gx_eta);
-                    gz_eta = _mm256_fmadd_pd(hh, _mm256_loadu_pd(&displ_b[b][i][k][1][0]), gz_eta);
-                }
-                dUx_dxi[i][j]  = gx_xi;
-                dUz_dxi[i][j]  = gz_xi;
-                dUx_deta[i][j] = gx_eta;
-                dUz_deta[i][j] = gz_eta;
-            }
+    for(int b=0;b<nbatch;++b){
+        __m256d Ux[5][5], Uz[5][5];
+        for(int i=0;i<5;++i)for(int j=0;j<5;++j){
+            Ux[i][j]=_mm256_loadu_pd(&displ_b[b][i][j][0][0]);
+            Uz[i][j]=_mm256_loadu_pd(&displ_b[b][i][j][1][0]);
+        }
 
-        // forces (nelast=6). a index map: a1..a6 -> a_b[...][0..5][...]
-        __m256d tmp[5][5];
+        __m256d dUx_dxi[5][5],dUz_dxi[5][5],dUx_deta[5][5],dUz_deta[5][5];
+        eo_left (Htcol, Ux, dUx_dxi);    // Ht * Ux
+        eo_left (Htcol, Uz, dUz_dxi);    // Ht * Uz
+        eo_right(Hrow,  Ux, dUx_deta);   // Ux * H
+        eo_right(Hrow,  Uz, dUz_deta);   // Uz * H
 
-        // f_x part 1: tmp = a1*dUx_dxi + a2*dUz_deta ; fx = H*tmp
-        for (int i = 0; i < 5; ++i)
-            for (int j = 0; j < 5; ++j) {
-                __m256d a1 = _mm256_loadu_pd(&a_b[b][i][j][0][0]);
-                __m256d a2 = _mm256_loadu_pd(&a_b[b][i][j][1][0]);
-                tmp[i][j] = _mm256_fmadd_pd(a1, dUx_dxi[i][j],
-                            _mm256_mul_pd(a2, dUz_deta[i][j]));
-            }
-        for (int i = 0; i < 5; ++i)
-            for (int j = 0; j < 5; ++j) {
-                __m256d acc = _mm256_setzero_pd();
-                for (int k = 0; k < 5; ++k)  // H*tmp : scalar H[i][k], vector tmp[k][j]
-                    acc = _mm256_fmadd_pd(_mm256_set1_pd(H[i][k]), tmp[k][j], acc);
-                _mm256_storeu_pd(&f_b[b][i][j][0][0], acc);
-            }
-        // f_x part 2: tmp = a4*(dUx_deta + dUz_dxi) ; fx += tmp*Ht
-        for (int i = 0; i < 5; ++i)
-            for (int j = 0; j < 5; ++j) {
-                __m256d a4 = _mm256_loadu_pd(&a_b[b][i][j][3][0]);
-                tmp[i][j] = _mm256_mul_pd(a4, _mm256_add_pd(dUx_deta[i][j], dUz_dxi[i][j]));
-            }
-        for (int i = 0; i < 5; ++i)
-            for (int j = 0; j < 5; ++j) {
-                __m256d acc = _mm256_loadu_pd(&f_b[b][i][j][0][0]);
-                for (int k = 0; k < 5; ++k)  // tmp*Ht : scalar Ht[k][j], vector tmp[i][k]
-                    acc = _mm256_fmadd_pd(_mm256_set1_pd(Ht[k][j]), tmp[i][k], acc);
-                _mm256_storeu_pd(&f_b[b][i][j][0][0], acc);
-            }
+        __m256d tmp[5][5], part2[5][5], fx[5][5], fz[5][5];
 
-        // f_z part 1: tmp = a5*dUx_deta + a6*dUz_dxi ; fz = H*tmp
-        for (int i = 0; i < 5; ++i)
-            for (int j = 0; j < 5; ++j) {
-                __m256d a5 = _mm256_loadu_pd(&a_b[b][i][j][4][0]);
-                __m256d a6 = _mm256_loadu_pd(&a_b[b][i][j][5][0]);
-                tmp[i][j] = _mm256_fmadd_pd(a5, dUx_deta[i][j],
-                            _mm256_mul_pd(a6, dUz_dxi[i][j]));
-            }
-        for (int i = 0; i < 5; ++i)
-            for (int j = 0; j < 5; ++j) {
-                __m256d acc = _mm256_setzero_pd();
-                for (int k = 0; k < 5; ++k)  // H*tmp
-                    acc = _mm256_fmadd_pd(_mm256_set1_pd(H[i][k]), tmp[k][j], acc);
-                _mm256_storeu_pd(&f_b[b][i][j][1][0], acc);
-            }
-        // f_z part 2: tmp = a2*dUx_dxi + a3*dUz_deta ; fz += tmp*Ht
-        for (int i = 0; i < 5; ++i)
-            for (int j = 0; j < 5; ++j) {
-                __m256d a2 = _mm256_loadu_pd(&a_b[b][i][j][1][0]);
-                __m256d a3 = _mm256_loadu_pd(&a_b[b][i][j][2][0]);
-                tmp[i][j] = _mm256_fmadd_pd(a2, dUx_dxi[i][j],
-                            _mm256_mul_pd(a3, dUz_deta[i][j]));
-            }
-        for (int i = 0; i < 5; ++i)
-            for (int j = 0; j < 5; ++j) {
-                __m256d acc = _mm256_loadu_pd(&f_b[b][i][j][1][0]);
-                for (int k = 0; k < 5; ++k)  // tmp*Ht
-                    acc = _mm256_fmadd_pd(_mm256_set1_pd(Ht[k][j]), tmp[i][k], acc);
-                _mm256_storeu_pd(&f_b[b][i][j][1][0], acc);
-            }
+        // fx = H*(a1*dUx_dxi + a2*dUz_deta)
+        for(int i=0;i<5;++i)for(int j=0;j<5;++j){
+            __m256d a1=_mm256_loadu_pd(&a_b[b][i][j][0][0]);
+            __m256d a2=_mm256_loadu_pd(&a_b[b][i][j][1][0]);
+            tmp[i][j]=_mm256_fmadd_pd(a1,dUx_dxi[i][j],_mm256_mul_pd(a2,dUz_deta[i][j]));
+        }
+        eo_left(Hcol, tmp, fx);
+        // fx += (a4*(dUx_deta+dUz_dxi)) * Ht
+        for(int i=0;i<5;++i)for(int j=0;j<5;++j){
+            __m256d a4=_mm256_loadu_pd(&a_b[b][i][j][3][0]);
+            tmp[i][j]=_mm256_mul_pd(a4,_mm256_add_pd(dUx_deta[i][j],dUz_dxi[i][j]));
+        }
+        eo_right(Htrow, tmp, part2);
+        for(int i=0;i<5;++i)for(int j=0;j<5;++j)
+            fx[i][j]=_mm256_add_pd(fx[i][j],part2[i][j]);
+
+        // fz = H*(a5*dUx_deta + a6*dUz_dxi)
+        for(int i=0;i<5;++i)for(int j=0;j<5;++j){
+            __m256d a5=_mm256_loadu_pd(&a_b[b][i][j][4][0]);
+            __m256d a6=_mm256_loadu_pd(&a_b[b][i][j][5][0]);
+            tmp[i][j]=_mm256_fmadd_pd(a5,dUx_deta[i][j],_mm256_mul_pd(a6,dUz_dxi[i][j]));
+        }
+        eo_left(Hcol, tmp, fz);
+        // fz += (a2*dUx_dxi + a3*dUz_deta) * Ht
+        for(int i=0;i<5;++i)for(int j=0;j<5;++j){
+            __m256d a2=_mm256_loadu_pd(&a_b[b][i][j][1][0]);
+            __m256d a3=_mm256_loadu_pd(&a_b[b][i][j][2][0]);
+            tmp[i][j]=_mm256_fmadd_pd(a2,dUx_dxi[i][j],_mm256_mul_pd(a3,dUz_deta[i][j]));
+        }
+        eo_right(Htrow, tmp, part2);
+        for(int i=0;i<5;++i)for(int j=0;j<5;++j)
+            fz[i][j]=_mm256_add_pd(fz[i][j],part2[i][j]);
+
+        for(int i=0;i<5;++i)for(int j=0;j<5;++j){
+            _mm256_storeu_pd(&f_b[b][i][j][0][0], fx[i][j]);
+            _mm256_storeu_pd(&f_b[b][i][j][1][0], fz[i][j]);
+        }
     }
     
     // Tail processing for remainder elements
