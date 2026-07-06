@@ -16,7 +16,6 @@
 
 const int NGLL = 5;
 const int NELEM = 12800;
-const int NSTEPS = 3208;
 const int W = 4;
 
 // REFERENCE kernel for a single element
@@ -219,7 +218,13 @@ void elast_kd2_psv_opt(
     }
 }
 
-int main() {
+int NSTEPS = 3208; // default, can be overridden
+
+int main(int argc, char** argv) {
+    if (argc > 1) {
+        NSTEPS = std::atoi(argv[1]);
+        if (NSTEPS <= 0) NSTEPS = 3208;
+    }
     double H[NGLL][NGLL];
     double Ht[NGLL][NGLL];
     std::ifstream infile("H_ngll5.txt");
