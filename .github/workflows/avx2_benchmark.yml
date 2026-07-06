@@ -1,5 +1,5 @@
 name: AVX2 Benchmark
-on: [workflow_dispatch]
+on: [push, workflow_dispatch]
 
 jobs:
   benchmark:
