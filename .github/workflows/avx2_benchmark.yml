@@ -1,0 +1,41 @@
+name: AVX2 Benchmark
+on: [workflow_dispatch]
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Confirm real x86 + AVX2
+        run: |
+          uname -m
+          grep -m1 -o avx2 /proc/cpuinfo || echo "NO AVX2"
+
+      - name: Build with native AVX2 and confirm AVX2 emitted
+        run: |
+          # The current microbench.cpp is Stage 2
+          # We'll build it as microbench_stage2
+          g++ -O3 -march=native -std=c++17 microbench.cpp -o microbench_stage2
+          echo "=== Stage 2 AVX2 instructions ==="
+          objdump -d microbench_stage2 | grep -m3 -oE "vfmadd[0-9a-z]*|ymm[0-9]+"
+
+          # Now get Stage 1 from the commit before the even-odd kernel
+          git checkout ae8bea9 microbench.cpp
+          g++ -O3 -march=native -std=c++17 microbench.cpp -o microbench_stage1
+          echo "=== Stage 1 AVX2 instructions ==="
+          objdump -d microbench_stage1 | grep -m3 -oE "vfmadd[0-9a-z]*|ymm[0-9]+"
+
+          # Revert to HEAD for the rest of the workflow
+          git checkout HEAD microbench.cpp
+
+      - name: Run Stage 1 (Batched AVX2, No Even-Odd)
+        run: |
+          echo "=== RUNNING STAGE 1 ==="
+          taskset -c 0 ./microbench_stage1 2000
+
+      - name: Run Stage 2 (Even-Odd AVX2)
+        run: |
+          echo "=== RUNNING STAGE 2 ==="
+          taskset -c 0 ./microbench_stage2 2000
