@@ -462,27 +462,28 @@ end subroutine MAT_Fint
 !=======================================================================
 ! Batched internal force computation
 !=======================================================================
-subroutine MAT_Fint_batched(f,d,v,matpro,matwrk,ngll,ndof,dt,grid, E_ep,E_el,sg,sgp,nbatch)
+subroutine MAT_Fint_batched(f,d,v,matpro,matwrk,ngll,ndof,dt,grid, E_ep,E_el,sg,sgp)
+  use batch_const, only : VEC_W
   use spec_grid, only : sem_grid_type
-  integer, intent(in) :: ngll,ndof,nbatch
-  double precision, dimension(ngll,ngll,ndof,nbatch), intent(out) :: f
-  double precision, dimension(ngll,ngll,ndof,nbatch), intent(inout) :: d,v
-  type(matpro_elem_type), dimension(nbatch), intent(in) :: matpro
-  type(matwrk_elem_type), dimension(nbatch), intent(inout) :: matwrk
+  integer, intent(in) :: ngll,ndof
+  double precision, dimension(ngll,ngll,ndof,VEC_W), intent(out) :: f
+  double precision, dimension(ngll,ngll,ndof,VEC_W), intent(inout) :: d,v
+  type(matpro_elem_type), dimension(VEC_W), intent(in) :: matpro
+  type(matwrk_elem_type), dimension(VEC_W), intent(inout) :: matwrk
   double precision, intent(in) :: dt
   type(sem_grid_type), intent(in) :: grid
-  double precision, dimension(nbatch), intent(out) :: E_ep, E_el
-  double precision, dimension(3,nbatch), intent(out) :: sg,sgp
+  double precision, dimension(VEC_W), intent(out) :: E_ep, E_el
+  double precision, dimension(3,VEC_W), intent(out) :: sg,sgp
   integer :: w
   logical :: fast_ok
-  double precision :: a1(ngll,ngll,nbatch),a2(ngll,ngll,nbatch),a3(ngll,ngll,nbatch)
-  double precision :: a4(ngll,ngll,nbatch),a5(ngll,ngll,nbatch),a6(ngll,ngll,nbatch)
-  double precision :: beta(ngll,ngll,nbatch)
+  double precision :: a1(ngll,ngll,VEC_W),a2(ngll,ngll,VEC_W),a3(ngll,ngll,VEC_W)
+  double precision :: a4(ngll,ngll,VEC_W),a5(ngll,ngll,VEC_W),a6(ngll,ngll,VEC_W)
+  double precision :: beta(ngll,ngll,VEC_W)
 
-  ! --- homogeneity guard: fast path only if ALL nbatch elements are pure
+  ! --- homogeneity guard: fast path only if ALL VEC_W elements are pure
   !     isotropic elastic PSV (matches ELAST_KD2_PSV's nelast==6 branch) ---
   fast_ok = (ndof == 2)
-  do w = 1, nbatch
+  do w = 1, VEC_W
     if (.not. MAT_isElastic(matpro(w))) fast_ok = .false.
     if (fast_ok) then
       if (size(matwrk(w)%elast%a,3) /= 6) fast_ok = .false.
@@ -490,7 +491,7 @@ subroutine MAT_Fint_batched(f,d,v,matpro,matwrk,ngll,ndof,dt,grid, E_ep,E_el,sg,
   enddo
 
   if (fast_ok) then
-    do w = 1, nbatch
+    do w = 1, VEC_W
       a1(:,:,w) = matwrk(w)%elast%a(:,:,1)
       a2(:,:,w) = matwrk(w)%elast%a(:,:,2)
       a3(:,:,w) = matwrk(w)%elast%a(:,:,3)
@@ -499,19 +500,19 @@ subroutine MAT_Fint_batched(f,d,v,matpro,matwrk,ngll,ndof,dt,grid, E_ep,E_el,sg,
       a6(:,:,w) = matwrk(w)%elast%a(:,:,6)
     enddo
 
-    call MAT_ELAST_KD2_batched(f,d,a1,a2,a3,a4,a5,a6,grid%hprime,grid%hTprime,ngll,nbatch)
+    call MAT_ELAST_KD2_batched(f,d,a1,a2,a3,a4,a5,a6,grid%hprime,grid%hTprime,ngll)
 
     if (grid%W < huge(1d0)) then
-      do w = 1, nbatch
+      do w = 1, VEC_W
         beta(:,:,w) = matwrk(w)%elast%beta(:,:)
       enddo
-      call MAT_ELAST_add_25D_f_batched(f,d,beta,ngll,ndof,nbatch)
+      call MAT_ELAST_add_25D_f_batched(f,d,beta,ngll,ndof)
     endif
 
     E_ep = 0d0; E_el = 0d0; sg = 0d0; sgp = 0d0
   else
     ! fallback: not homogeneous fast-path-eligible -> original per-element path
-    do w = 1, nbatch
+    do w = 1, VEC_W
       call MAT_Fint(f(:,:,:,w),d(:,:,:,w),v(:,:,:,w),matpro(w),matwrk(w), &
                     ngll,ndof,dt,grid, E_ep(w),E_el(w),sg(:,w),sgp(:,w))
     enddo

@@ -275,6 +275,7 @@ subroutine compute_Fint(f,d,v,pb)
   use fields_class, only : FIELD_get_elem_sub, FIELD_add_elem
   use mat_gen, only : MAT_Fint
 #ifdef OPT_BATCH
+  use batch_const, only : VEC_W
   use mat_gen, only : MAT_Fint_batched, matwrk_elem_type
   use prop_mat, only : matpro_elem_type
 #endif
@@ -288,7 +289,6 @@ subroutine compute_Fint(f,d,v,pb)
   integer :: e
 
 #ifdef OPT_BATCH
-  integer, parameter :: VEC_W = 4
   double precision, dimension(pb%grid%ngll,pb%grid%ngll,pb%fields%ndof,VEC_W) :: dloc_b,vloc_b,floc_b
   double precision, dimension(VEC_W) :: E_ep_b, E_el_b
   double precision, dimension(3,VEC_W) :: sg_b, sgp_b
@@ -338,7 +338,7 @@ subroutine compute_Fint(f,d,v,pb)
       ! Call STUB MAT_Fint_batched
       call MAT_Fint_batched(floc_b, dloc_b, vloc_b, matpro_b, matwrk_b, &
                             pb%grid%ngll, pb%fields%ndof, pb%time%dt, pb%grid, &
-                            E_ep_b, E_el_b, sg_b, sgp_b, VEC_W)
+                            E_ep_b, E_el_b, sg_b, sgp_b)
 
       ! Scatter 4 elements via 4 calls to FIELD_add_elem and accumulate energies/work
       do w = 1, VEC_W

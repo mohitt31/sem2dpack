@@ -5,13 +5,14 @@
 !=======================================================================
 module color_elem
 
+  use batch_const, only : VEC_WIDTH => VEC_W
   use stdio, only : IO_abort
   use echo, only : echo_init, iout, fmt1, fmtok
 
   implicit none
   private
 
-  integer, parameter, public :: VEC_WIDTH = 4
+  public :: VEC_WIDTH
 
   type color_group_type
     integer :: nelem = 0

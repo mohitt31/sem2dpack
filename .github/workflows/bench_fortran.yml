@@ -36,7 +36,7 @@ jobs:
         run: |
           cd SRC
           make clean EXEC=../bin/sem2dsolve_batch
-          make -j4 F90=gfortran OPT="-O3 -march=native -ffp-contract=fast -fno-vect-cost-model -fstack-arrays -fmax-stack-var-size=1048576 -w -cpp -DOPT_BATCH" EXEC=../bin/sem2dsolve_batch
+          make -j4 F90=gfortran OPT="-O3 -march=native -ffp-contract=fast -fno-vect-cost-model -w -cpp -DOPT_BATCH" EXEC=../bin/sem2dsolve_batch
 
       - name: Disassembly / objdump Check for AVX2 / ymm / vfmadd
         run: |
@@ -47,7 +47,7 @@ jobs:
       - name: Vectorization Diagnostics (-fopt-info-vec)
         run: |
           cd SRC
-          gfortran -O3 -march=native -ffp-contract=fast -fno-vect-cost-model -fstack-arrays -fmax-stack-var-size=1048576 -w -cpp -DOPT_BATCH -fopt-info-vec-optimized -fopt-info-vec-missed -c mat_elastic.f90 2>&1 | tee vec_info.log
+          gfortran -O3 -march=native -ffp-contract=fast -fno-vect-cost-model -w -cpp -DOPT_BATCH -fopt-info-vec-optimized -fopt-info-vec-missed -c mat_elastic.f90 2>&1 | tee vec_info.log
           echo "=== Vectorizer output for MAT_ELAST_KD2_batched ==="
           grep -i -E "mat_elastic.f90:(8[6-9][0-9]|9[0-3][0-9])" vec_info.log || true
 
