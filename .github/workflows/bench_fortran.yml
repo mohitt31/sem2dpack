@@ -1,0 +1,56 @@
+name: Fortran Solver AVX2 Benchmark
+on:
+  push:
+    branches:
+      - feature/batched-force-apply
+  workflow_dispatch:
+
+jobs:
+  benchmark:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Confirm CPU architecture and AVX2 support
+        run: |
+          echo "=== System Architecture ==="
+          uname -m
+          echo "=== AVX2 CPU Flag ==="
+          grep -m1 -o avx2 /proc/cpuinfo || (echo "NO AVX2 FOUND" && exit 1)
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gfortran python3 python3-numpy binutils
+          gfortran --version
+
+      - name: Build Unflagged Binary
+        run: |
+          mkdir -p bin
+          cd SRC
+          make clean EXEC=../bin/sem2dsolve
+          make -j4 F90=gfortran OPT="-O3 -march=native -ffp-contract=fast -w" EXEC=../bin/sem2dsolve
+
+      - name: Build Flagged (Batched) Binary
+        run: |
+          cd SRC
+          make clean EXEC=../bin/sem2dsolve_batch
+          make -j4 F90=gfortran OPT="-O3 -march=native -ffp-contract=fast -fno-vect-cost-model -w -cpp -DOPT_BATCH" EXEC=../bin/sem2dsolve_batch
+
+      - name: Disassembly / objdump Check for AVX2 / ymm / vfmadd
+        run: |
+          cd SRC
+          echo "=== objdump instruction counts for mat_elastic.o ==="
+          objdump -d mat_elastic.o | grep -oE "vfmadd[0-9a-z]*|ymm[0-9]+" | sort | uniq -c || echo "None found"
+
+      - name: Vectorization Diagnostics (-fopt-info-vec)
+        run: |
+          cd SRC
+          gfortran -O3 -march=native -ffp-contract=fast -fno-vect-cost-model -w -cpp -DOPT_BATCH -fopt-info-vec-optimized -fopt-info-vec-missed -c mat_elastic.f90 2>&1 | tee vec_info.log
+          echo "=== Vectorizer output for MAT_ELAST_KD2_batched ==="
+          grep -i -E "mat_elastic.f90:(8[6-9][0-9]|9[0-3][0-9])" vec_info.log || true
+
+      - name: Run 2.5D_inplane Benchmark & Seismogram Diff
+        run: |
+          python3 scripts/ci_benchmark.py

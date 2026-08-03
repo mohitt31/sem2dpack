@@ -274,6 +274,10 @@ subroutine compute_Fint(f,d,v,pb)
 
   use fields_class, only : FIELD_get_elem_sub, FIELD_add_elem
   use mat_gen, only : MAT_Fint
+#ifdef OPT_BATCH
+  use mat_gen, only : MAT_Fint_batched, matwrk_elem_type
+  use prop_mat, only : matpro_elem_type
+#endif
 
   double precision, dimension(:,:), intent(out) :: f
   double precision, dimension(:,:), intent(in) :: d,v
@@ -283,11 +287,22 @@ subroutine compute_Fint(f,d,v,pb)
   double precision :: E_ep, E_el, sg(3), sgp(3)
   integer :: e
 
+#ifdef OPT_BATCH
+  integer, parameter :: VEC_W = 4
+  double precision, dimension(pb%grid%ngll,pb%grid%ngll,pb%fields%ndof,VEC_W) :: dloc_b,vloc_b,floc_b
+  double precision, dimension(VEC_W) :: E_ep_b, E_el_b
+  double precision, dimension(3,VEC_W) :: sg_b, sgp_b
+  integer :: icol, ibatch, irem, w, el(VEC_W)
+  type(matpro_elem_type) :: matpro_b(VEC_W)
+  type(matwrk_elem_type) :: matwrk_b(VEC_W)
+#endif
+
   f = 0d0
   pb%energy%E_el = 0d0
   pb%energy%sg   = 0d0
   pb%energy%sgp  = 0d0
 
+#ifndef OPT_BATCH
   do e = 1,pb%grid%nelem
     
     call FIELD_get_elem_sub(d,pb%grid%ibool(:,:,e),dloc)
@@ -306,16 +321,53 @@ subroutine compute_Fint(f,d,v,pb)
     pb%energy%sgp = pb%energy%sgp + sgp
 
   enddo
+#else
+  do icol = 1, pb%grid%coloring%ncolors
+    ! Main batches of W=4
+    do ibatch = 1, pb%grid%coloring%colors(icol)%nbatches
+      el = pb%grid%coloring%colors(icol)%batches(:, ibatch)
 
-!DEVEL: to parallelize this loop for multi-cores (OpenMP)
-!DEVEL: reorder the elements to avoid conflict during assembly (graph coloring)
-!DEVEL: loop on the colors, with sync at the end of each color
-! do icol=1,size(colors)
-!   do k = 1,colors(icol)%nelem  ! parallelize this loop
-!     e = colors(icol)%elem(k)
-!     ... compute Fint for element #e and assemble ...
-!   enddo
-! enddo
+      ! Gather 4 elements via 4 calls to FIELD_get_elem_sub
+      do w = 1, VEC_W
+        call FIELD_get_elem_sub(d, pb%grid%ibool(:,:,el(w)), dloc_b(:,:,:,w))
+        call FIELD_get_elem_sub(v, pb%grid%ibool(:,:,el(w)), vloc_b(:,:,:,w))
+        matpro_b(w) = pb%matpro(el(w))
+        matwrk_b(w) = pb%matwrk(el(w))
+      enddo
+
+      ! Call STUB MAT_Fint_batched
+      call MAT_Fint_batched(floc_b, dloc_b, vloc_b, matpro_b, matwrk_b, &
+                            pb%grid%ngll, pb%fields%ndof, pb%time%dt, pb%grid, &
+                            E_ep_b, E_el_b, sg_b, sgp_b, VEC_W)
+
+      ! Scatter 4 elements via 4 calls to FIELD_add_elem and accumulate energies/work
+      do w = 1, VEC_W
+        pb%matwrk(el(w)) = matwrk_b(w)
+        call FIELD_add_elem(floc_b(:,:,:,w), f, pb%grid%ibool(:,:,el(w)))
+        pb%energy%E_el = pb%energy%E_el + E_el_b(w)
+        pb%energy%E_ep = pb%energy%E_ep + E_ep_b(w)
+        pb%energy%sg   = pb%energy%sg   + sg_b(:,w)
+        pb%energy%sgp  = pb%energy%sgp  + sgp_b(:,w)
+      enddo
+    enddo
+
+    ! Remainder elements for this color
+    do irem = 1, pb%grid%coloring%colors(icol)%nrem
+      e = pb%grid%coloring%colors(icol)%rem(irem)
+      call FIELD_get_elem_sub(d, pb%grid%ibool(:,:,e), dloc)
+      call FIELD_get_elem_sub(v, pb%grid%ibool(:,:,e), vloc)
+      call MAT_Fint(floc, dloc, vloc, pb%matpro(e), pb%matwrk(e), &
+                    pb%grid%ngll, pb%fields%ndof, pb%time%dt, pb%grid, &
+                    E_ep, E_el, sg, sgp)
+      call FIELD_add_elem(floc, f, pb%grid%ibool(:,:,e))
+
+      pb%energy%E_el = pb%energy%E_el + E_el
+      pb%energy%E_ep = pb%energy%E_ep + E_ep
+      pb%energy%sg   = pb%energy%sg   + sg
+      pb%energy%sgp  = pb%energy%sgp  + sgp
+    enddo
+  enddo
+#endif
 
 end subroutine compute_Fint
 

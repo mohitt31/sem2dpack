@@ -9,7 +9,6 @@ module mat_elastic
   
  !-- purely elastic
   type matwrk_elast_type
-    private
     double precision, pointer :: a(:,:,:) => null(), beta(:,:) => null()
   end type matwrk_elast_type
 
@@ -29,7 +28,8 @@ module mat_elastic
           , MAT_ELAST_init_elem_prop, MAT_ELAST_init_elem_work &
           , MAT_ELAST_f, MAT_ELAST_stress &
           , MAT_ELAST_memwrk, MAT_ELAST_mempro &
-          , MAT_ELAST_add_25D_f, MAT_ELAST_get_beta
+          , MAT_ELAST_add_25D_f, MAT_ELAST_get_beta &
+          , MAT_ELAST_KD2_batched, MAT_ELAST_add_25D_f_batched
 
 
 contains
@@ -860,5 +860,94 @@ end subroutine ELAST_KD_SH_inlined
     end subroutine stress_anisotropic
 
   end subroutine MAT_ELAST_stress
+
+!=======================================================================
+! Batched ELAST_KD2 for isotropic elastic PSV (nelast==6)
+!=======================================================================
+subroutine MAT_ELAST_KD2_batched(f,d,a1,a2,a3,a4,a5,a6,H,Ht,ngll,nbatch)
+  integer, intent(in) :: ngll, nbatch
+  double precision, intent(in)  :: d(ngll,ngll,2,nbatch)   ! external layout, unchanged
+  double precision, intent(in)  :: a1(ngll,ngll,nbatch),a2(ngll,ngll,nbatch),a3(ngll,ngll,nbatch)
+  double precision, intent(in)  :: a4(ngll,ngll,nbatch),a5(ngll,ngll,nbatch),a6(ngll,ngll,nbatch)
+  double precision, intent(in)  :: H(ngll,ngll), Ht(ngll,ngll)
+  double precision, intent(out) :: f(ngll,ngll,2,nbatch)   ! external layout, unchanged
+
+  ! internal SIMD-friendly layout: w is the FIRST dimension (unit stride)
+  double precision :: dp(nbatch,ngll,ngll,2)
+  double precision :: a1p(nbatch,ngll,ngll),a2p(nbatch,ngll,ngll),a3p(nbatch,ngll,ngll)
+  double precision :: a4p(nbatch,ngll,ngll),a5p(nbatch,ngll,ngll),a6p(nbatch,ngll,ngll)
+  double precision :: gxx(nbatch,ngll,ngll), gzx(nbatch,ngll,ngll)
+  double precision :: gxe(nbatch,ngll,ngll), gze(nbatch,ngll,ngll)
+  double precision :: tmp(nbatch,ngll,ngll), fp(nbatch,ngll,ngll,2)
+  integer :: i,j,k,w
+
+  ! repack: external (i,j,comp,w) -> internal (w,i,j,comp), w fastest on write
+  do j=1,ngll; do i=1,ngll; do w=1,nbatch
+    dp(w,i,j,1)=d(i,j,1,w); dp(w,i,j,2)=d(i,j,2,w)
+    a1p(w,i,j)=a1(i,j,w); a2p(w,i,j)=a2(i,j,w); a3p(w,i,j)=a3(i,j,w)
+    a4p(w,i,j)=a4(i,j,w); a5p(w,i,j)=a5(i,j,w); a6p(w,i,j)=a6(i,j,w)
+  enddo; enddo; enddo
+
+  ! gradients (unit-stride over w now)
+  do j=1,ngll; do i=1,ngll
+    gxx(:,i,j)=0d0; gzx(:,i,j)=0d0; gxe(:,i,j)=0d0; gze(:,i,j)=0d0
+    do k=1,ngll; do w=1,nbatch
+      gxx(w,i,j)=gxx(w,i,j)+Ht(i,k)*dp(w,k,j,1)
+      gzx(w,i,j)=gzx(w,i,j)+Ht(i,k)*dp(w,k,j,2)
+      gxe(w,i,j)=gxe(w,i,j)+dp(w,i,k,1)*H(k,j)
+      gze(w,i,j)=gze(w,i,j)+dp(w,i,k,2)*H(k,j)
+    enddo; enddo
+  enddo; enddo
+
+  ! fx
+  do j=1,ngll; do i=1,ngll; do w=1,nbatch
+    tmp(w,i,j)=a1p(w,i,j)*gxx(w,i,j)+a2p(w,i,j)*gze(w,i,j)
+  enddo; enddo; enddo
+  fp(:,:,:,1)=0d0
+  do j=1,ngll; do i=1,ngll; do k=1,ngll; do w=1,nbatch
+    fp(w,i,j,1)=fp(w,i,j,1)+H(i,k)*tmp(w,k,j)
+  enddo; enddo; enddo; enddo
+  do j=1,ngll; do i=1,ngll; do w=1,nbatch
+    tmp(w,i,j)=a4p(w,i,j)*(gxe(w,i,j)+gzx(w,i,j))
+  enddo; enddo; enddo
+  do j=1,ngll; do i=1,ngll; do k=1,ngll; do w=1,nbatch
+    fp(w,i,j,1)=fp(w,i,j,1)+tmp(w,i,k)*Ht(k,j)
+  enddo; enddo; enddo; enddo
+
+  ! fz
+  do j=1,ngll; do i=1,ngll; do w=1,nbatch
+    tmp(w,i,j)=a5p(w,i,j)*gxe(w,i,j)+a6p(w,i,j)*gzx(w,i,j)
+  enddo; enddo; enddo
+  fp(:,:,:,2)=0d0
+  do j=1,ngll; do i=1,ngll; do k=1,ngll; do w=1,nbatch
+    fp(w,i,j,2)=fp(w,i,j,2)+H(i,k)*tmp(w,k,j)
+  enddo; enddo; enddo; enddo
+  do j=1,ngll; do i=1,ngll; do w=1,nbatch
+    tmp(w,i,j)=a2p(w,i,j)*gxx(w,i,j)+a3p(w,i,j)*gze(w,i,j)
+  enddo; enddo; enddo
+  do j=1,ngll; do i=1,ngll; do k=1,ngll; do w=1,nbatch
+    fp(w,i,j,2)=fp(w,i,j,2)+tmp(w,i,k)*Ht(k,j)
+  enddo; enddo; enddo; enddo
+
+  ! repack back
+  do j=1,ngll; do i=1,ngll; do w=1,nbatch
+    f(i,j,1,w)=fp(w,i,j,1); f(i,j,2,w)=fp(w,i,j,2)
+  enddo; enddo; enddo
+end subroutine MAT_ELAST_KD2_batched
+
+!=======================================================================
+! Batched 2.5D crustal plane correction
+!=======================================================================
+subroutine MAT_ELAST_add_25D_f_batched(f,d,beta,ngll,ndof,nbatch)
+  integer, intent(in) :: ngll,ndof,nbatch
+  double precision, intent(inout) :: f(ngll,ngll,ndof,nbatch)
+  double precision, intent(in) :: d(ngll,ngll,ndof,nbatch), beta(ngll,ngll,nbatch)
+  integer :: k,w
+  do k=1,ndof
+    do w=1,nbatch
+      f(:,:,k,w) = f(:,:,k,w) - beta(:,:,w)*d(:,:,k,w)
+    enddo
+  enddo
+end subroutine MAT_ELAST_add_25D_f_batched
 
 end module mat_elastic

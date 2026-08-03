@@ -1,0 +1,292 @@
+!=======================================================================
+! Module: color_elem
+! Description: Element-conflict graph construction, greedy coloring,
+!              and batch/remainder grouping for batched assembly in SEM2DPACK.
+!=======================================================================
+module color_elem
+
+  use stdio, only : IO_abort
+  use echo, only : echo_init, iout, fmt1, fmtok
+
+  implicit none
+  private
+
+  integer, parameter, public :: VEC_WIDTH = 4
+
+  type color_group_type
+    integer :: nelem = 0
+    integer :: nbatches = 0
+    integer, pointer :: batches(:,:) => null() ! (VEC_WIDTH, nbatches)
+    integer :: nrem = 0
+    integer, pointer :: rem(:) => null()       ! (nrem)
+    integer, pointer :: elem(:) => null()      ! (nelem)
+  end type color_group_type
+
+  type elem_coloring_type
+    integer :: ncolors = 0
+    integer :: nelem = 0
+    type(color_group_type), pointer :: colors(:) => null()
+  end type elem_coloring_type
+
+  public :: color_group_type, elem_coloring_type, &
+            COLOR_build_and_validate, COLOR_free
+
+contains
+
+!=======================================================================
+! Build element conflict graph, execute greedy coloring, group into
+! batches of VEC_WIDTH + remainder, validate conflict-freedom at runtime,
+! and report color statistics.
+!=======================================================================
+  subroutine COLOR_build_and_validate(ibool, nelem, ngll, npoin, coloring)
+
+    integer, intent(in) :: nelem, ngll, npoin
+    integer, intent(in) :: ibool(ngll, ngll, nelem)
+    type(elem_coloring_type), intent(inout) :: coloring
+
+    integer, allocatable :: node_count(:), node_ptr(:), node_cur(:), node_elem_list(:)
+    integer, allocatable :: elem_color(:), node_owner(:)
+    logical, allocatable :: color_used(:)
+    integer :: total_entries, e, i, j, k, p, nbr, c, max_color, icol
+    integer :: n_c, nbatch, nrem, ibatch, inbatch, irem, idx
+    integer :: max_possible_colors
+
+    if (echo_init) then
+      write(iout, *)
+      write(iout, '(a)') ' E l e m e n t   c o l o r i n g'
+      write(iout, '(a)') ' ==============================='
+      write(iout, fmt1, advance='no') 'Building element-conflict graph & coloring'
+    endif
+
+    ! Step 1: Count elements per node (CSR structure)
+    allocate(node_count(npoin))
+    node_count = 0
+
+    do e = 1, nelem
+      do j = 1, ngll
+      do i = 1, ngll
+        p = ibool(i, j, e)
+        if (p >= 1 .and. p <= npoin) then
+          node_count(p) = node_count(p) + 1
+        endif
+      enddo
+      enddo
+    enddo
+
+    allocate(node_ptr(npoin + 1))
+    node_ptr(1) = 1
+    do p = 1, npoin
+      node_ptr(p + 1) = node_ptr(p) + node_count(p)
+    enddo
+
+    total_entries = node_ptr(npoin + 1) - 1
+    allocate(node_elem_list(total_entries))
+    allocate(node_cur(npoin))
+    node_cur = node_ptr(1:npoin)
+
+    do e = 1, nelem
+      do j = 1, ngll
+      do i = 1, ngll
+        p = ibool(i, j, e)
+        if (p >= 1 .and. p <= npoin) then
+          node_elem_list(node_cur(p)) = e
+          node_cur(p) = node_cur(p) + 1
+        endif
+      enddo
+      enddo
+    enddo
+
+    deallocate(node_cur)
+    deallocate(node_count)
+
+    ! Step 2: Greedy coloring in element order e = 1 .. nelem
+    ! Small working array for colors
+    max_possible_colors = 100
+    allocate(color_used(max_possible_colors))
+    color_used = .false.
+
+    allocate(elem_color(nelem))
+    elem_color = 0
+
+    do e = 1, nelem
+      ! Mark used colors by already-colored neighbors
+      do j = 1, ngll
+      do i = 1, ngll
+        p = ibool(i, j, e)
+        if (p >= 1 .and. p <= npoin) then
+          do k = node_ptr(p), node_ptr(p + 1) - 1
+            nbr = node_elem_list(k)
+            if (nbr < e) then
+              c = elem_color(nbr)
+              if (c > 0) then
+                if (c > max_possible_colors) then
+                  call IO_abort('COLOR_build: max_possible_colors exceeded')
+                endif
+                color_used(c) = .true.
+              endif
+            endif
+          enddo
+        endif
+      enddo
+      enddo
+
+      ! Smallest unused color >= 1
+      c = 1
+      do while (color_used(c))
+        c = c + 1
+        if (c > max_possible_colors) then
+          call IO_abort('COLOR_build: max_possible_colors exceeded')
+        endif
+      enddo
+      elem_color(e) = c
+
+      ! Reset color_used for the neighbors
+      do j = 1, ngll
+      do i = 1, ngll
+        p = ibool(i, j, e)
+        if (p >= 1 .and. p <= npoin) then
+          do k = node_ptr(p), node_ptr(p + 1) - 1
+            nbr = node_elem_list(k)
+            if (nbr < e) then
+              c = elem_color(nbr)
+              if (c > 0) color_used(c) = .false.
+            endif
+          enddo
+        endif
+      enddo
+      enddo
+    enddo
+
+    deallocate(color_used)
+    deallocate(node_elem_list)
+    deallocate(node_ptr)
+
+    max_color = maxval(elem_color)
+    coloring%ncolors = max_color
+    coloring%nelem = nelem
+
+    allocate(coloring%colors(max_color))
+
+    ! Step 3: Group each color into batches of VEC_WIDTH and remainder
+    do icol = 1, max_color
+      n_c = count(elem_color == icol)
+      nbatch = n_c / VEC_WIDTH
+      nrem = mod(n_c, VEC_WIDTH)
+
+      coloring%colors(icol)%nelem = n_c
+      coloring%colors(icol)%nbatches = nbatch
+      coloring%colors(icol)%nrem = nrem
+
+      allocate(coloring%colors(icol)%elem(n_c))
+      if (nbatch > 0) allocate(coloring%colors(icol)%batches(VEC_WIDTH, nbatch))
+      if (nrem > 0) allocate(coloring%colors(icol)%rem(nrem))
+
+      idx = 0
+      ibatch = 1
+      inbatch = 0
+      irem = 0
+
+      do e = 1, nelem
+        if (elem_color(e) == icol) then
+          idx = idx + 1
+          coloring%colors(icol)%elem(idx) = e
+
+          if (ibatch <= nbatch) then
+            inbatch = inbatch + 1
+            coloring%colors(icol)%batches(inbatch, ibatch) = e
+            if (inbatch == VEC_WIDTH) then
+              inbatch = 0
+              ibatch = ibatch + 1
+            endif
+          else
+            irem = irem + 1
+            coloring%colors(icol)%rem(irem) = e
+          endif
+        endif
+      enddo
+    enddo
+
+    if (echo_init) write(iout, fmtok)
+
+    ! Step 4: Runtime Validation of Coloring
+    ! Assert that within every color, no two elements share any global node id
+    if (echo_init) write(iout, fmt1, advance='no') 'Validating conflict-free coloring'
+
+    allocate(node_owner(npoin))
+    node_owner = 0
+
+    do icol = 1, max_color
+      do idx = 1, coloring%colors(icol)%nelem
+        e = coloring%colors(icol)%elem(idx)
+        do j = 1, ngll
+        do i = 1, ngll
+          p = ibool(i, j, e)
+          if (p >= 1 .and. p <= npoin) then
+            if (node_owner(p) /= 0 .and. node_owner(p) /= e) then
+              write(iout, '(A,I0,A,I0,A,I0,A,I0)') &
+                'ERROR: Conflict in color ', icol, ' at node ', p, &
+                ' between elements ', node_owner(p), ' and ', e
+              call IO_abort('COLORING VALIDATION FAILED: Elements share node within color')
+            endif
+            node_owner(p) = e
+          endif
+        enddo
+        enddo
+      enddo
+
+      ! Clear node_owner for this color
+      do idx = 1, coloring%colors(icol)%nelem
+        e = coloring%colors(icol)%elem(idx)
+        do j = 1, ngll
+        do i = 1, ngll
+          p = ibool(i, j, e)
+          if (p >= 1 .and. p <= npoin) then
+            node_owner(p) = 0
+          endif
+        enddo
+        enddo
+      enddo
+    enddo
+
+    deallocate(node_owner)
+    deallocate(elem_color)
+
+    if (echo_init) then
+      write(iout, fmtok)
+      write(iout, 100) 'Total number of colors . . . . . . . . . = ', coloring%ncolors
+      do icol = 1, coloring%ncolors
+        write(iout, 110) 'Color ', icol, ': ', coloring%colors(icol)%nelem, &
+             ' elements (', coloring%colors(icol)%nbatches, ' batches of 4, ', &
+             coloring%colors(icol)%nrem, ' remainder)'
+      enddo
+      write(iout, 120) 'Coloring validation . . . . . . . . . . = PASSED (no conflicts)'
+      write(iout, *)
+    endif
+
+100 format(5X,A,I0)
+110 format(7X,A,I0,A,I0,A,I0,A,I0,A)
+120 format(5X,A)
+
+  end subroutine COLOR_build_and_validate
+
+!=======================================================================
+! Deallocate dynamic structures in elem_coloring_type
+!=======================================================================
+  subroutine COLOR_free(coloring)
+    type(elem_coloring_type), intent(inout) :: coloring
+    integer :: icol
+
+    if (associated(coloring%colors)) then
+      do icol = 1, coloring%ncolors
+        if (associated(coloring%colors(icol)%batches)) deallocate(coloring%colors(icol)%batches)
+        if (associated(coloring%colors(icol)%rem)) deallocate(coloring%colors(icol)%rem)
+        if (associated(coloring%colors(icol)%elem)) deallocate(coloring%colors(icol)%elem)
+      enddo
+      deallocate(coloring%colors)
+      coloring%colors => null()
+    endif
+    coloring%ncolors = 0
+    coloring%nelem = 0
+  end subroutine COLOR_free
+
+end module color_elem
