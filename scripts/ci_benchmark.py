@@ -3,7 +3,7 @@ import subprocess
 import time
 import statistics
 import re
-import numpy as np
+import struct
 
 def run_simulation(exec_path, workdir, use_taskset=True):
     cmd = []
@@ -31,25 +31,41 @@ def run_simulation(exec_path, workdir, use_taskset=True):
     return wall_time, cpu_time, cpu_step
 
 def compare_files(f1, f2, name):
-    d1 = np.loadtxt(f1)
-    d2 = np.loadtxt(f2)
+    with open(f1, "rb") as fp1:
+        b1 = fp1.read()
+    with open(f2, "rb") as fp2:
+        b2 = fp2.read()
+        
+    n1 = len(b1) // 4
+    n2 = len(b2) // 4
+    if n1 != n2:
+        print(f"File size mismatch: {n1} vs {n2} floats")
+        return
+        
+    d1 = struct.unpack(f"{n1}f", b1[:n1*4])
+    d2 = struct.unpack(f"{n2}f", b2[:n2*4])
     
-    abs_diff = np.abs(d1 - d2)
-    max_abs = np.max(abs_diff)
+    max_abs = 0.0
+    max_abs_idx = 0
+    max_rel = 0.0
+    max_rel_idx = 0
+    diff_count = 0
     
-    # relative diff where denom not 0
-    denom = np.abs(d1)
-    rel_diff = np.zeros_like(abs_diff)
-    mask = denom > 1e-15
-    rel_diff[mask] = abs_diff[mask] / denom[mask]
-    max_rel = np.max(rel_diff)
-    
-    max_abs_idx = np.unravel_index(np.argmax(abs_diff), abs_diff.shape)
-    max_rel_idx = np.unravel_index(np.argmax(rel_diff), rel_diff.shape)
-    
-    diff_count = np.sum(d1 != d2)
-    total_count = d1.size
-    
+    for i, (v1, v2) in enumerate(zip(d1, d2)):
+        diff = abs(v1 - v2)
+        if diff > 0.0:
+            diff_count += 1
+        if diff > max_abs:
+            max_abs = diff
+            max_abs_idx = i
+        denom = abs(v1)
+        if denom > 1e-15:
+            rel = diff / denom
+            if rel > max_rel:
+                max_rel = rel
+                max_rel_idx = i
+                
+    total_count = n1
     print(f"\n--- Seismogram Diff for {name} ({os.path.basename(f1)} vs {os.path.basename(f2)}) ---")
     print(f"  Total elements: {total_count}, Differing elements: {diff_count} ({diff_count/total_count*100:.2f}%)")
     print(f"  Max Absolute Diff: {max_abs:.6e}")
