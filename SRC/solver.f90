@@ -327,6 +327,10 @@ subroutine compute_Fint(f,d,v,pb)
     do ibatch = 1, pb%grid%coloring%colors(icol)%nbatches
       el = pb%grid%coloring%colors(icol)%batches(:, ibatch)
 
+      ! Diagnostic build only (see README_BATCHED_FORCE_APPLY.md, "Why it doesn't win").
+      ! Runs the color-reordered element sequence through the original scalar MAT_Fint,
+      ! not the batched kernel. Used to isolate whether the coloring/reordering itself
+      ! costs anything, separate from the batched kernel path below.
 #ifdef OPT_BATCH_REORDER_ONLY
       do w = 1, VEC_W
         e = el(w)

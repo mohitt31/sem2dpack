@@ -38,6 +38,7 @@ jobs:
           make clean EXEC=../bin/sem2dsolve_batch
           make -j4 F90=gfortran OPT="-O3 -march=native -ffp-contract=fast -fno-vect-cost-model -w -cpp -DOPT_BATCH" EXEC=../bin/sem2dsolve_batch
 
+      # Diagnostic build: runs scalar MAT_Fint over color-reordered batches to isolate reordering/locality cost from batch kernel cost.
       - name: Build Reorder-Only Binary
         run: |
           cd SRC
