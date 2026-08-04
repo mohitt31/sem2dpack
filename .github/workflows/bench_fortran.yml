@@ -38,6 +38,12 @@ jobs:
           make clean EXEC=../bin/sem2dsolve_batch
           make -j4 F90=gfortran OPT="-O3 -march=native -ffp-contract=fast -fno-vect-cost-model -w -cpp -DOPT_BATCH" EXEC=../bin/sem2dsolve_batch
 
+      - name: Build Reorder-Only Binary
+        run: |
+          cd SRC
+          make clean EXEC=../bin/sem2dsolve_reorder_only
+          make -j4 F90=gfortran OPT="-O3 -march=native -ffp-contract=fast -w -cpp -DOPT_BATCH -DOPT_BATCH_REORDER_ONLY" EXEC=../bin/sem2dsolve_reorder_only
+
       - name: Disassembly / objdump Check for AVX2 / ymm / vfmadd
         run: |
           cd SRC

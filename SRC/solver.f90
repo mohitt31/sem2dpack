@@ -327,6 +327,22 @@ subroutine compute_Fint(f,d,v,pb)
     do ibatch = 1, pb%grid%coloring%colors(icol)%nbatches
       el = pb%grid%coloring%colors(icol)%batches(:, ibatch)
 
+#ifdef OPT_BATCH_REORDER_ONLY
+      do w = 1, VEC_W
+        e = el(w)
+        call FIELD_get_elem_sub(d, pb%grid%ibool(:,:,e), dloc)
+        call FIELD_get_elem_sub(v, pb%grid%ibool(:,:,e), vloc)
+        call MAT_Fint(floc, dloc, vloc, pb%matpro(e), pb%matwrk(e), &
+                      pb%grid%ngll, pb%fields%ndof, pb%time%dt, pb%grid, &
+                      E_ep, E_el, sg, sgp)
+        call FIELD_add_elem(floc, f, pb%grid%ibool(:,:,e))
+
+        pb%energy%E_el = pb%energy%E_el + E_el
+        pb%energy%E_ep = pb%energy%E_ep + E_ep
+        pb%energy%sg   = pb%energy%sg   + sg
+        pb%energy%sgp  = pb%energy%sgp  + sgp
+      enddo
+#else
       ! Gather 4 elements via 4 calls to FIELD_get_elem_sub
       do w = 1, VEC_W
         call FIELD_get_elem_sub(d, pb%grid%ibool(:,:,el(w)), dloc_b(:,:,:,w))
@@ -349,6 +365,7 @@ subroutine compute_Fint(f,d,v,pb)
         pb%energy%sg   = pb%energy%sg   + sg_b(:,w)
         pb%energy%sgp  = pb%energy%sgp  + sgp_b(:,w)
       enddo
+#endif
     enddo
 
     ! Remainder elements for this color

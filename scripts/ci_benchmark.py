@@ -77,6 +77,7 @@ def main():
     root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     workdir = os.path.join(root, "EXAMPLES", "2.5D_inplane")
     unflagged_exec = os.path.join(root, "bin", "sem2dsolve")
+    reorder_exec = os.path.join(root, "bin", "sem2dsolve_reorder_only")
     flagged_exec = os.path.join(root, "bin", "sem2dsolve_batch")
     
     # Check if taskset is available
@@ -84,7 +85,7 @@ def main():
     print(f"Using taskset -c 0: {use_taskset}")
     
     # 1. Unflagged runs
-    print("\n=== Running Unflagged Benchmark (3 runs) ===")
+    print("\n=== Running Unflagged Baseline Benchmark (3 runs) ===")
     unflagged_walls = []
     unflagged_cpus = []
     for r in range(1, 4):
@@ -96,9 +97,22 @@ def main():
     # Copy seismograms
     os.system(f"cp {os.path.join(workdir, 'Ux_sem2d.dat')} {os.path.join(workdir, 'Ux_unflagged.dat')}")
     os.system(f"cp {os.path.join(workdir, 'Uz_sem2d.dat')} {os.path.join(workdir, 'Uz_unflagged.dat')}")
+
+    # 2. Reorder-only runs
+    print("\n=== Running Reorder-Only Benchmark (3 runs) ===")
+    reorder_walls = []
+    reorder_cpus = []
+    for r in range(1, 4):
+        w, c, s = run_simulation(reorder_exec, workdir, use_taskset)
+        reorder_walls.append(w)
+        reorder_cpus.append(c)
+        print(f"  Run {r}: Wall = {w:.3f}s, Total Solver CPU = {c:.3f}s, CPU/step = {s:.6f}s")
+
+    os.system(f"cp {os.path.join(workdir, 'Ux_sem2d.dat')} {os.path.join(workdir, 'Ux_reorder.dat')}")
+    os.system(f"cp {os.path.join(workdir, 'Uz_sem2d.dat')} {os.path.join(workdir, 'Uz_reorder.dat')}")
     
-    # 2. Flagged runs
-    print("\n=== Running Flagged Benchmark (3 runs) ===")
+    # 3. Flagged (Batched) runs
+    print("\n=== Running Flagged (Batched) Benchmark (3 runs) ===")
     flagged_walls = []
     flagged_cpus = []
     for r in range(1, 4):
@@ -111,20 +125,25 @@ def main():
     os.system(f"cp {os.path.join(workdir, 'Uz_sem2d.dat')} {os.path.join(workdir, 'Uz_flagged.dat')}")
     
     med_unf_wall = statistics.median(unflagged_walls)
+    med_reo_wall = statistics.median(reorder_walls)
     med_flg_wall = statistics.median(flagged_walls)
+
     med_unf_cpu = statistics.median(unflagged_cpus)
+    med_reo_cpu = statistics.median(reorder_cpus)
     med_flg_cpu = statistics.median(flagged_cpus)
     
     print("\n=== Summary Timings ===")
-    print(f"Unflagged Median Wall Time: {med_unf_wall:.3f}s (Runs: {unflagged_walls})")
-    print(f"Flagged   Median Wall Time: {med_flg_wall:.3f}s (Runs: {flagged_walls})")
-    print(f"Speedup (Wall-clock): {med_unf_wall / med_flg_wall:.2f}x")
-    print(f"Unflagged Median Solver CPU: {med_unf_cpu:.3f}s (Runs: {unflagged_cpus})")
-    print(f"Flagged   Median Solver CPU: {med_flg_cpu:.3f}s (Runs: {flagged_cpus})")
-    print(f"Speedup (Solver CPU): {med_unf_cpu / med_flg_cpu:.2f}x")
+    print(f"Unflagged (Baseline) Median Wall: {med_unf_wall:.3f}s (Runs: {unflagged_walls})")
+    print(f"Reorder-Only         Median Wall: {med_reo_wall:.3f}s (Runs: {reorder_walls})")
+    print(f"Flagged (Batched)    Median Wall: {med_flg_wall:.3f}s (Runs: {flagged_walls})")
+    print(f"Speedup Reorder-Only vs Unflagged: {med_unf_wall / med_reo_wall:.2f}x")
+    print(f"Speedup Flagged-Batch vs Unflagged: {med_unf_wall / med_flg_wall:.2f}x")
+    print(f"Ratio Flagged-Batch vs Reorder-Only: {med_reo_wall / med_flg_wall:.2f}x")
     
-    compare_files(os.path.join(workdir, 'Ux_unflagged.dat'), os.path.join(workdir, 'Ux_flagged.dat'), "Ux_sem2d.dat")
-    compare_files(os.path.join(workdir, 'Uz_unflagged.dat'), os.path.join(workdir, 'Uz_flagged.dat'), "Uz_sem2d.dat")
+    compare_files(os.path.join(workdir, 'Ux_unflagged.dat'), os.path.join(workdir, 'Ux_reorder.dat'), "Ux_sem2d.dat (Unflagged vs Reorder)")
+    compare_files(os.path.join(workdir, 'Ux_unflagged.dat'), os.path.join(workdir, 'Ux_flagged.dat'), "Ux_sem2d.dat (Unflagged vs Flagged)")
+    compare_files(os.path.join(workdir, 'Uz_unflagged.dat'), os.path.join(workdir, 'Uz_reorder.dat'), "Uz_sem2d.dat (Unflagged vs Reorder)")
+    compare_files(os.path.join(workdir, 'Uz_unflagged.dat'), os.path.join(workdir, 'Uz_flagged.dat'), "Uz_sem2d.dat (Unflagged vs Flagged)")
 
 if __name__ == "__main__":
     main()
