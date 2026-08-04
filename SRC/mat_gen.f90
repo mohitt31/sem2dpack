@@ -477,8 +477,8 @@ subroutine MAT_Fint_batched(f,d,v,matpro,matwrk,ngll,ndof,dt,grid, E_ep,E_el,sg,
   double precision, dimension(3,VEC_W), intent(out) :: sg,sgp
   integer :: w
   logical :: fast_ok
-  double precision :: a1(ngll,ngll,VEC_W),a2(ngll,ngll,VEC_W),a3(ngll,ngll,VEC_W)
-  double precision :: a4(ngll,ngll,VEC_W),a5(ngll,ngll,VEC_W),a6(ngll,ngll,VEC_W)
+  double precision :: a1(VEC_W,OPT_NGLL,OPT_NGLL),a2(VEC_W,OPT_NGLL,OPT_NGLL),a3(VEC_W,OPT_NGLL,OPT_NGLL)
+  double precision :: a4(VEC_W,OPT_NGLL,OPT_NGLL),a5(VEC_W,OPT_NGLL,OPT_NGLL),a6(VEC_W,OPT_NGLL,OPT_NGLL)
   double precision :: beta(ngll,ngll,VEC_W)
 
   ! --- homogeneity guard: fast path only if ALL VEC_W elements are pure
@@ -494,12 +494,12 @@ subroutine MAT_Fint_batched(f,d,v,matpro,matwrk,ngll,ndof,dt,grid, E_ep,E_el,sg,
 
   if (fast_ok) then
     do w = 1, VEC_W
-      a1(:,:,w) = matwrk(w)%elast%a(:,:,1)
-      a2(:,:,w) = matwrk(w)%elast%a(:,:,2)
-      a3(:,:,w) = matwrk(w)%elast%a(:,:,3)
-      a4(:,:,w) = matwrk(w)%elast%a(:,:,4)
-      a5(:,:,w) = matwrk(w)%elast%a(:,:,5)
-      a6(:,:,w) = matwrk(w)%elast%a(:,:,6)
+      a1(w,:,:) = matwrk(w)%elast%a(:,:,1)
+      a2(w,:,:) = matwrk(w)%elast%a(:,:,2)
+      a3(w,:,:) = matwrk(w)%elast%a(:,:,3)
+      a4(w,:,:) = matwrk(w)%elast%a(:,:,4)
+      a5(w,:,:) = matwrk(w)%elast%a(:,:,5)
+      a6(w,:,:) = matwrk(w)%elast%a(:,:,6)
     enddo
 
     call MAT_ELAST_KD2_batched(f,d,a1,a2,a3,a4,a5,a6,grid%hprime,grid%hTprime)

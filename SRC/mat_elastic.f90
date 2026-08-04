@@ -868,15 +868,13 @@ subroutine MAT_ELAST_KD2_batched(f,d,a1,a2,a3,a4,a5,a6,H,Ht)
   use batch_const, only : VEC_W
   use constants, only : OPT_NGLL
   double precision, intent(in)  :: d(OPT_NGLL,OPT_NGLL,2,VEC_W)   ! external layout, unchanged
-  double precision, intent(in)  :: a1(OPT_NGLL,OPT_NGLL,VEC_W),a2(OPT_NGLL,OPT_NGLL,VEC_W),a3(OPT_NGLL,OPT_NGLL,VEC_W)
-  double precision, intent(in)  :: a4(OPT_NGLL,OPT_NGLL,VEC_W),a5(OPT_NGLL,OPT_NGLL,VEC_W),a6(OPT_NGLL,OPT_NGLL,VEC_W)
+  double precision, intent(in)  :: a1(VEC_W,OPT_NGLL,OPT_NGLL),a2(VEC_W,OPT_NGLL,OPT_NGLL),a3(VEC_W,OPT_NGLL,OPT_NGLL)
+  double precision, intent(in)  :: a4(VEC_W,OPT_NGLL,OPT_NGLL),a5(VEC_W,OPT_NGLL,OPT_NGLL),a6(VEC_W,OPT_NGLL,OPT_NGLL)
   double precision, intent(in)  :: H(OPT_NGLL,OPT_NGLL), Ht(OPT_NGLL,OPT_NGLL)
   double precision, intent(out) :: f(OPT_NGLL,OPT_NGLL,2,VEC_W)   ! external layout, unchanged
 
   ! internal SIMD-friendly layout: w is the FIRST dimension (unit stride)
   double precision :: dp(VEC_W,OPT_NGLL,OPT_NGLL,2)
-  double precision :: a1p(VEC_W,OPT_NGLL,OPT_NGLL),a2p(VEC_W,OPT_NGLL,OPT_NGLL),a3p(VEC_W,OPT_NGLL,OPT_NGLL)
-  double precision :: a4p(VEC_W,OPT_NGLL,OPT_NGLL),a5p(VEC_W,OPT_NGLL,OPT_NGLL),a6p(VEC_W,OPT_NGLL,OPT_NGLL)
   double precision :: gxx(VEC_W,OPT_NGLL,OPT_NGLL), gzx(VEC_W,OPT_NGLL,OPT_NGLL)
   double precision :: gxe(VEC_W,OPT_NGLL,OPT_NGLL), gze(VEC_W,OPT_NGLL,OPT_NGLL)
   double precision :: tmp(VEC_W,OPT_NGLL,OPT_NGLL), fp(VEC_W,OPT_NGLL,OPT_NGLL,2)
@@ -885,8 +883,6 @@ subroutine MAT_ELAST_KD2_batched(f,d,a1,a2,a3,a4,a5,a6,H,Ht)
   ! repack: external (i,j,comp,w) -> internal (w,i,j,comp), w fastest on write
   do j=1,OPT_NGLL; do i=1,OPT_NGLL; do w=1,VEC_W
     dp(w,i,j,1)=d(i,j,1,w); dp(w,i,j,2)=d(i,j,2,w)
-    a1p(w,i,j)=a1(i,j,w); a2p(w,i,j)=a2(i,j,w); a3p(w,i,j)=a3(i,j,w)
-    a4p(w,i,j)=a4(i,j,w); a5p(w,i,j)=a5(i,j,w); a6p(w,i,j)=a6(i,j,w)
   enddo; enddo; enddo
 
   ! gradients (unit-stride over w now)
@@ -902,14 +898,14 @@ subroutine MAT_ELAST_KD2_batched(f,d,a1,a2,a3,a4,a5,a6,H,Ht)
 
   ! fx
   do j=1,OPT_NGLL; do i=1,OPT_NGLL; do w=1,VEC_W
-    tmp(w,i,j)=a1p(w,i,j)*gxx(w,i,j)+a2p(w,i,j)*gze(w,i,j)
+    tmp(w,i,j)=a1(w,i,j)*gxx(w,i,j)+a2(w,i,j)*gze(w,i,j)
   enddo; enddo; enddo
   fp(:,:,:,1)=0d0
   do j=1,OPT_NGLL; do i=1,OPT_NGLL; do k=1,OPT_NGLL; do w=1,VEC_W
     fp(w,i,j,1)=fp(w,i,j,1)+H(i,k)*tmp(w,k,j)
   enddo; enddo; enddo; enddo
   do j=1,OPT_NGLL; do i=1,OPT_NGLL; do w=1,VEC_W
-    tmp(w,i,j)=a4p(w,i,j)*(gxe(w,i,j)+gzx(w,i,j))
+    tmp(w,i,j)=a4(w,i,j)*(gxe(w,i,j)+gzx(w,i,j))
   enddo; enddo; enddo
   do j=1,OPT_NGLL; do i=1,OPT_NGLL; do k=1,OPT_NGLL; do w=1,VEC_W
     fp(w,i,j,1)=fp(w,i,j,1)+tmp(w,i,k)*Ht(k,j)
@@ -917,14 +913,14 @@ subroutine MAT_ELAST_KD2_batched(f,d,a1,a2,a3,a4,a5,a6,H,Ht)
 
   ! fz
   do j=1,OPT_NGLL; do i=1,OPT_NGLL; do w=1,VEC_W
-    tmp(w,i,j)=a5p(w,i,j)*gxe(w,i,j)+a6p(w,i,j)*gzx(w,i,j)
+    tmp(w,i,j)=a5(w,i,j)*gxe(w,i,j)+a6(w,i,j)*gzx(w,i,j)
   enddo; enddo; enddo
   fp(:,:,:,2)=0d0
   do j=1,OPT_NGLL; do i=1,OPT_NGLL; do k=1,OPT_NGLL; do w=1,VEC_W
     fp(w,i,j,2)=fp(w,i,j,2)+H(i,k)*tmp(w,k,j)
   enddo; enddo; enddo; enddo
   do j=1,OPT_NGLL; do i=1,OPT_NGLL; do w=1,VEC_W
-    tmp(w,i,j)=a2p(w,i,j)*gxx(w,i,j)+a3p(w,i,j)*gze(w,i,j)
+    tmp(w,i,j)=a2(w,i,j)*gxx(w,i,j)+a3(w,i,j)*gze(w,i,j)
   enddo; enddo; enddo
   do j=1,OPT_NGLL; do i=1,OPT_NGLL; do k=1,OPT_NGLL; do w=1,VEC_W
     fp(w,i,j,2)=fp(w,i,j,2)+tmp(w,i,k)*Ht(k,j)
