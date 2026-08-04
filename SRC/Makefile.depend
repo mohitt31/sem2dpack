@@ -81,7 +81,7 @@ main.o: bc_gen.o constants.o echo.o energy.o init.o input.o plot_gen.o \
 	problem_class.o receivers.o solver.o
 mat_damage.o: constants.o echo.o prop_mat.o spec_grid.o stdio.o utils.o
 mat_elastic.o: batch_const.o constants.o echo.o mxmlib.o prop_mat.o spec_grid.o stdio.o
-mat_gen.o: batch_const.o echo.o fields.o mat_damage.o mat_elastic.o mat_kelvin_voigt.o \
+mat_gen.o: batch_const.o constants.o echo.o fields.o mat_damage.o mat_elastic.o mat_kelvin_voigt.o \
 	mat_mass.o mat_plastic.o mat_visco.o memory_info.o mxmlib.o prop_mat.o \
 	spec_grid.o stdio.o
 mat_kelvin_voigt.o: echo.o prop_mat.o stdio.o

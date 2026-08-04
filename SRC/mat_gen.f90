@@ -464,6 +464,7 @@ end subroutine MAT_Fint
 !=======================================================================
 subroutine MAT_Fint_batched(f,d,v,matpro,matwrk,ngll,ndof,dt,grid, E_ep,E_el,sg,sgp)
   use batch_const, only : VEC_W
+  use constants, only : OPT_NGLL
   use spec_grid, only : sem_grid_type
   integer, intent(in) :: ngll,ndof
   double precision, dimension(ngll,ngll,ndof,VEC_W), intent(out) :: f
@@ -481,8 +482,9 @@ subroutine MAT_Fint_batched(f,d,v,matpro,matwrk,ngll,ndof,dt,grid, E_ep,E_el,sg,
   double precision :: beta(ngll,ngll,VEC_W)
 
   ! --- homogeneity guard: fast path only if ALL VEC_W elements are pure
-  !     isotropic elastic PSV (matches ELAST_KD2_PSV's nelast==6 branch) ---
-  fast_ok = (ndof == 2)
+  !     isotropic elastic PSV (matches ELAST_KD2_PSV's nelast==6 branch)
+  !     AND grid ngll matches compile-time OPT_NGLL ---
+  fast_ok = (ndof == 2) .and. (ngll == OPT_NGLL)
   do w = 1, VEC_W
     if (.not. MAT_isElastic(matpro(w))) fast_ok = .false.
     if (fast_ok) then
@@ -500,13 +502,13 @@ subroutine MAT_Fint_batched(f,d,v,matpro,matwrk,ngll,ndof,dt,grid, E_ep,E_el,sg,
       a6(:,:,w) = matwrk(w)%elast%a(:,:,6)
     enddo
 
-    call MAT_ELAST_KD2_batched(f,d,a1,a2,a3,a4,a5,a6,grid%hprime,grid%hTprime,ngll)
+    call MAT_ELAST_KD2_batched(f,d,a1,a2,a3,a4,a5,a6,grid%hprime,grid%hTprime)
 
     if (grid%W < huge(1d0)) then
       do w = 1, VEC_W
         beta(:,:,w) = matwrk(w)%elast%beta(:,:)
       enddo
-      call MAT_ELAST_add_25D_f_batched(f,d,beta,ngll,ndof)
+      call MAT_ELAST_add_25D_f_batched(f,d,beta,ndof)
     endif
 
     E_ep = 0d0; E_el = 0d0; sg = 0d0; sgp = 0d0
