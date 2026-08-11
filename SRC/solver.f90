@@ -283,16 +283,22 @@ subroutine compute_Fint(f,d,v,pb)
   double precision :: E_ep, E_el, sg(3), sgp(3)
   integer :: e
 
+#ifdef OPT_OMP
+  integer :: icol, ie
+  double precision :: E_ep_total, E_el_total, sg_total(3), sgp_total(3)
+#endif
+
   f = 0d0
   pb%energy%E_el = 0d0
   pb%energy%sg   = 0d0
   pb%energy%sgp  = 0d0
 
+#ifndef OPT_OMP
   do e = 1,pb%grid%nelem
-    
+
     call FIELD_get_elem_sub(d,pb%grid%ibool(:,:,e),dloc)
     call FIELD_get_elem_sub(v,pb%grid%ibool(:,:,e),vloc)
-    call MAT_Fint(floc,dloc,vloc,pb%matpro(e),pb%matwrk(e), & 
+    call MAT_Fint(floc,dloc,vloc,pb%matpro(e),pb%matwrk(e), &
                    pb%grid%ngll,pb%fields%ndof,pb%time%dt,pb%grid, &
                    E_ep,E_el,sg,sgp)
     call FIELD_add_elem(floc,f,pb%grid%ibool(:,:,e)) ! assembly
@@ -306,16 +312,48 @@ subroutine compute_Fint(f,d,v,pb)
     pb%energy%sgp = pb%energy%sgp + sgp
 
   enddo
+#else
+  ! Elements within a color never share a global node (validated at grid
+  ! init in COLOR_build_and_validate), so the scatter step below is
+  ! race-free across threads within a color without locks or atomics.
+  ! The implicit barrier at OMP END PARALLEL DO makes color icol+1 wait
+  ! until every thread has finished writing color icol's contribution
+  ! to f, so nodes shared *across* colors are also safe.
+  E_ep_total  = 0d0
+  E_el_total  = 0d0
+  sg_total    = 0d0
+  sgp_total   = 0d0
 
-!DEVEL: to parallelize this loop for multi-cores (OpenMP)
-!DEVEL: reorder the elements to avoid conflict during assembly (graph coloring)
-!DEVEL: loop on the colors, with sync at the end of each color
-! do icol=1,size(colors)
-!   do k = 1,colors(icol)%nelem  ! parallelize this loop
-!     e = colors(icol)%elem(k)
-!     ... compute Fint for element #e and assemble ...
-!   enddo
-! enddo
+  do icol = 1, pb%grid%coloring%ncolors
+    !$OMP PARALLEL DO PRIVATE(e,dloc,vloc,floc,E_ep,E_el,sg,sgp) &
+    !$OMP& REDUCTION(+:E_ep_total,E_el_total,sg_total,sgp_total) &
+    !$OMP& SHARED(d,v,f,pb,icol)
+    do ie = 1, pb%grid%coloring%colors(icol)%nelem
+      e = pb%grid%coloring%colors(icol)%elem(ie)
+
+      call FIELD_get_elem_sub(d,pb%grid%ibool(:,:,e),dloc)
+      call FIELD_get_elem_sub(v,pb%grid%ibool(:,:,e),vloc)
+      call MAT_Fint(floc,dloc,vloc,pb%matpro(e),pb%matwrk(e), &
+                     pb%grid%ngll,pb%fields%ndof,pb%time%dt,pb%grid, &
+                     E_ep,E_el,sg,sgp)
+      call FIELD_add_elem(floc,f,pb%grid%ibool(:,:,e)) ! assembly
+
+      E_ep_total  = E_ep_total  + E_ep
+      E_el_total  = E_el_total  + E_el
+      sg_total    = sg_total    + sg
+      sgp_total   = sgp_total   + sgp
+    enddo
+    !$OMP END PARALLEL DO
+  enddo
+
+ ! total elastic energy change
+  pb%energy%E_el = pb%energy%E_el + E_el_total
+ ! cumulated plastic energy
+  pb%energy%E_ep = pb%energy%E_ep + E_ep_total
+ ! cumulated stress glut
+  pb%energy%sg  = pb%energy%sg  + sg_total
+  pb%energy%sgp = pb%energy%sgp + sgp_total
+#endif
 
 end subroutine compute_Fint
 
