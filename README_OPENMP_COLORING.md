@@ -103,30 +103,39 @@ flagged), so this looks like negligible single thread overhead from the
 `OPT_OMP` code path rather than a real cost, but I wouldn't call it exactly
 zero either.
 
+I reran the whole sweep a second time to make sure the plateau wasn't a
+fluke of one run. It reproduces: second pass gave 1.71x at 4 threads,
+1.66x at 8, 1.62x at 10, same shape, all within a couple percent of the
+first pass. Correctness diffs were bit for bit identical to the first
+run at every thread count.
+
 ## Honest read on the scaling
 
-Speedup peaks at 4 threads (1.67x) and does not improve from there. 8 and
-10 threads land at 1.62-1.63x, which is flat with 4 threads within noise,
-not better. This machine has 4 performance cores and 6 efficiency cores,
-so 4 threads is exactly where the performance cores run out. That's a
-plausible explanation on its own, and consistent with what you'd expect
-if the E-cores just don't add much for this kind of work.
+Speedup peaks around 4 threads (1.67-1.71x across the two runs) and does
+not improve from there. 8 and 10 threads land at 1.6-1.7x, flat with 4
+threads within noise, not better.
 
-But I don't think core type is the whole story, and I want to flag the
-other candidate rather than just pick the explanation that sounds cleanest.
-This mesh's coloring is 3200/3200/3200/3123/75/2, meaning two of six colors
-have only 75 and 2 elements. Every color opens and closes an `!$OMP
-PARALLEL DO` region (thread team fork, work split, implicit barrier at the
-end), once per color per call to `compute_Fint`, and `compute_Fint` runs
-once per timestep. At roughly 3200 timesteps for this run, that's about
-19,000 parallel region launches over the full solve, a meaningful fraction
-of them spawning a full thread team to process 2 elements. I have not
-profiled this specifically (would need something like `perf` or Instruments
-around the parallel region entry/exit to separate fork-join overhead from
-actual compute time), so I can't say how much of the plateau is P/E core
-saturation versus this. Both are real structural properties of this
-implementation and this mesh, not measurement noise, and either one would
-produce the shape of curve seen here.
+I had two candidate explanations for this and didn't want to just pick
+the one that sounded cleanest, so I tested one of them instead of
+guessing. This mesh's coloring is 3200/3200/3200/3123/75/2, two of six
+colors have only 75 and 2 elements, and every color opens and closes its
+own `!$OMP PARALLEL DO` region once per call to `compute_Fint` (about
+19,000 parallel region launches over the full solve at ~3200 timesteps).
+I built a diagnostic variant with `IF(pb%grid%coloring%colors(icol)%nelem
+> 64)` added to the parallel directive, so the two tiny colors just run
+serially on the calling thread instead of spawning a team, and reran the
+4/8/10 thread cases. Result: no measurable difference. 8 threads came in
+at 8.76 s versus 8.86 s / 8.73 s for the two non-threshold runs, 10
+threads at 8.96 s versus 8.89 s / 8.97 s, all inside the same run to run
+noise band. Correctness was unaffected (same round off diffs).
+
+So the tiny-color fork-join overhead is not the dominant effect (I'm not
+ruling it out as a small contributor, but it isn't moving the needle at
+this mesh size). That leaves the 4 performance core count as the more
+likely explanation for where the plateau sits, by elimination rather than
+by assumption. I did not keep the threshold change, since it tested
+negative for a real effect and would just be an unexplained magic number
+sitting in the code.
 
 Also worth being honest about scope: `compute_Fint` is the hottest part of
 the solver by the earlier profiling, but it isn't the whole solver. Time
@@ -134,13 +143,13 @@ integration bookkeeping, boundary conditions, source injection, and I/O are
 still serial in this build. Even with perfect scaling inside
 `compute_Fint`, Amdahl's law caps the overall speedup at whatever fraction
 of total wall time `compute_Fint` actually is, and I haven't isolated that
-fraction on this build, so the 1.67x ceiling could be explained partly by
-that too, on top of the two points above.
+fraction on this build, so part of the 1.6-1.7x ceiling is plausibly that,
+on top of the P-core count.
 
 Net: this works, it's correct, and it's a real speedup, but it's a modest
-one that saturates early, not a "throw cores at it" win. If this is worth
-pushing further, I'd want to profile the parallel region overhead directly
-before assuming it's core type and stopping there.
+one that saturates at 4 threads, not a "throw cores at it" win, and it
+looks like a genuine core-count ceiling rather than an artifact of this
+particular coloring that a smarter implementation would dodge.
 
 ## Reproducing
 
