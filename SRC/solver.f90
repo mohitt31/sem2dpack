@@ -13,6 +13,15 @@ module solver
 
   public :: solve
 
+#ifdef OPT_FINT_PROFILE
+ ! Wall-clock accumulator for compute_Fint, used to measure the
+ ! parallelizable fraction directly (see -DOPT_FINT_PROFILE in the
+ ! README). Only compiled in the profiling build, so the normal
+ ! serial and OpenMP builds are unaffected.
+  integer(8), public :: FINT_clock_count = 0_8
+  integer(8), public :: FINT_clock_rate  = 0_8
+#endif
+
 contains
 
 !=====================================================================
@@ -288,6 +297,11 @@ subroutine compute_Fint(f,d,v,pb)
   double precision :: E_ep_total, E_el_total, sg_total(3), sgp_total(3)
 #endif
 
+#ifdef OPT_FINT_PROFILE
+  integer(8) :: prof_c0, prof_c1, prof_cr
+  call system_clock(prof_c0, prof_cr)
+#endif
+
   f = 0d0
   pb%energy%E_el = 0d0
   pb%energy%sg   = 0d0
@@ -318,14 +332,22 @@ subroutine compute_Fint(f,d,v,pb)
   ! race-free across threads within a color without locks or atomics.
   ! The implicit barrier at OMP END PARALLEL DO makes color icol+1 wait
   ! until every thread has finished writing color icol's contribution
-  ! to f, so nodes shared *across* colors are also safe.
+  ! to f, so nodes shared *across* colors are also safe. Do NOT add
+  ! NOWAIT here, that barrier is load-bearing for cross-color correctness.
+  !
+  ! pb is SHARED but the only part written inside the region is
+  ! pb%matwrk(e), and every thread owns a distinct e, so those writes hit
+  ! disjoint entries. DEFAULT(NONE) forces every variable to be classified
+  ! explicitly, so an accidental shared write would fail to compile rather
+  ! than race at runtime.
   E_ep_total  = 0d0
   E_el_total  = 0d0
   sg_total    = 0d0
   sgp_total   = 0d0
 
   do icol = 1, pb%grid%coloring%ncolors
-    !$OMP PARALLEL DO PRIVATE(e,dloc,vloc,floc,E_ep,E_el,sg,sgp) &
+    !$OMP PARALLEL DO DEFAULT(NONE) &
+    !$OMP& PRIVATE(e,dloc,vloc,floc,E_ep,E_el,sg,sgp) &
     !$OMP& REDUCTION(+:E_ep_total,E_el_total,sg_total,sgp_total) &
     !$OMP& SHARED(d,v,f,pb,icol)
     do ie = 1, pb%grid%coloring%colors(icol)%nelem
@@ -353,6 +375,12 @@ subroutine compute_Fint(f,d,v,pb)
  ! cumulated stress glut
   pb%energy%sg  = pb%energy%sg  + sg_total
   pb%energy%sgp = pb%energy%sgp + sgp_total
+#endif
+
+#ifdef OPT_FINT_PROFILE
+  call system_clock(prof_c1)
+  FINT_clock_count = FINT_clock_count + (prof_c1 - prof_c0)
+  FINT_clock_rate  = prof_cr
 #endif
 
 end subroutine compute_Fint

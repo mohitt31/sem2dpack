@@ -28,7 +28,10 @@ threads, and it does not improve past that on this machine's 10 cores.
   over colors serially, and for each color opens a `!$OMP PARALLEL DO` over
   that color's element list, calling the same `FIELD_get_elem_sub` /
   `MAT_Fint` / `FIELD_add_elem` sequence the serial path uses per element.
-  No batched kernel, no new material routine.
+  No batched kernel, no new material routine. The directive uses
+  `DEFAULT(NONE)`, so every variable in the region has to be classified
+  explicitly as private, shared, or reduction, and the compiler rejects
+  the build if any is left ambiguous.
 - `SRC/Makefile` / `SRC/Makefile.depend` -- compile rule now always runs
   `-cpp` (previously conditional through `OPT`, which meant the unflagged
   build wouldn't preprocess `#ifdef` at all), and dependency lines added for
@@ -85,6 +88,16 @@ diff pattern is set entirely by the coloring, and threading on top of it
 doesn't add any further nondeterminism. No thread count showed large or
 systematic differences, so I'm treating this as correct, not a bug.
 
+Looking at which values actually differ makes the round-off story
+concrete. The Ux signal peaks at 1.8e-1. All 8 differing Ux values are
+near zero: the largest is -1.79e-6 (about 1e-5 of the peak) and the rest
+are 1e-11 down to 1e-15. The abs diff on that largest one, 1.14e-13, is a
+relative difference of about 6e-8, which is single precision epsilon. So
+what's happening is the float64 sums differ by round-off, and that only
+shows up in the float32 output on values small enough that float32's
+spacing is around 1e-13. Nothing differs among the values that carry the
+actual signal.
+
 ## Thread scaling (2.5D_inplane, Apple M4, 4P + 6E cores, median of 3 runs)
 
 | Build | Threads | Wall time (median) | Speedup vs OMP 1 thread |
@@ -131,25 +144,60 @@ noise band. Correctness was unaffected (same round off diffs).
 
 So the tiny-color fork-join overhead is not the dominant effect (I'm not
 ruling it out as a small contributor, but it isn't moving the needle at
-this mesh size). That leaves the 4 performance core count as the more
-likely explanation for where the plateau sits, by elimination rather than
-by assumption. I did not keep the threshold change, since it tested
+this mesh size). I did not keep the threshold change, since it tested
 negative for a real effect and would just be an unexplained magic number
 sitting in the code.
 
-Also worth being honest about scope: `compute_Fint` is the hottest part of
-the solver by the earlier profiling, but it isn't the whole solver. Time
-integration bookkeeping, boundary conditions, source injection, and I/O are
-still serial in this build. Even with perfect scaling inside
-`compute_Fint`, Amdahl's law caps the overall speedup at whatever fraction
-of total wall time `compute_Fint` actually is, and I haven't isolated that
-fraction on this build, so part of the 1.6-1.7x ceiling is plausibly that,
-on top of the P-core count.
+## Amdahl check, directly measured
 
-Net: this works, it's correct, and it's a real speedup, but it's a modest
-one that saturates at 4 threads, not a "throw cores at it" win, and it
-looks like a genuine core-count ceiling rather than an artifact of this
-particular coloring that a smarter implementation would dodge.
+The obvious remaining explanation is Amdahl's law: `compute_Fint` is the
+only part parallelized here, and it isn't the whole solver. Time
+integration, boundary conditions, source injection, and I/O are still
+serial. Rather than estimate that fraction, I measured it. There is a
+build flag `OPT_FINT_PROFILE` (see Reproducing) that wraps `compute_Fint`
+and the whole time loop in `system_clock` wall timers and prints the
+ratio at the end.
+
+Measured on the serial build (no OpenMP), `compute_Fint` is 0.689 of the
+time-loop wall time (20.0 s of 29.1 s). The OpenMP build at 1 thread
+gives 0.697, essentially the same. That lines up with the earlier
+profiling estimate almost exactly: element force apply was about 35% and
+gather/scatter about 34%, which sum to about 69%, and those three
+operations are exactly what `compute_Fint` does.
+
+With a parallelizable fraction p = 0.689, ideal Amdahl (assuming the
+parallel part scales perfectly across n equal cores) predicts:
+
+| Threads | Ideal Amdahl | Observed | Observed / ideal |
+|---|---|---|---|
+| 2  | 1.53x | 1.46x | 96% |
+| 4  | 2.07x | 1.69x | 82% |
+| max (p only) | 3.22x | -- | -- |
+
+Two things fall out of this. First, the observed numbers are bounded by
+Amdahl and reasonably close to it at low thread counts, so the "it does
+not scale past a point" result is expected, not a bug: even a perfect
+parallelization of `compute_Fint` tops out at 3.2x here because 31% of
+the run is serial. Second, the M4 only has 4 performance cores, so the 8
+and 10 thread rows add efficiency cores that contribute little, which is
+why the curve is flat past 4 threads rather than continuing toward the
+Amdahl ceiling.
+
+The one honest gap: at 4 threads observed is 82% of ideal, not 100%.
+Back-solving, the parallel part itself only reached about 2.45x on 4
+cores, not 4x. That sub-linear scaling of the parallel region is
+consistent with about half of it (the gather/scatter, which is
+memory-bandwidth-bound rather than compute-bound) not scaling with core
+count, since several cores hammering memory share one bandwidth budget. I
+have not separated the two halves' scaling directly, so I'm flagging that
+as the likely cause rather than a measured fact, but it points straight
+at gather/scatter as the next thing to optimize.
+
+Net: this works, it's correct, and it's a real speedup. It is modest and
+saturates at 4 threads, but that is now a measured Amdahl ceiling (p =
+0.689, 4 performance cores) rather than a guess, and the shortfall below
+the ideal curve points at the memory-bound gather/scatter as the next
+bottleneck.
 
 ## Reproducing
 
@@ -159,6 +207,17 @@ particular coloring that a smarter implementation would dodge.
     cd ../EXAMPLES/2.5D_inplane
     ../../bin/sem2dsolve
     OMP_NUM_THREADS=4 ../../bin/sem2dsolve_omp
+
+To reproduce the parallelizable-fraction measurement, add
+`-DOPT_FINT_PROFILE` (works with or without `-DOPT_OMP -fopenmp`). It
+prints a `FINT PROFILE` block at the end of the run with the wall time in
+`compute_Fint`, the wall time of the whole time loop, and their ratio.
+This flag only adds two `system_clock` reads per timestep and does not
+change any results:
+
+    make clean && make F90=gfortran OPT="-O3 -march=native -ffp-contract=fast -w -cpp -DOPT_FINT_PROFILE" EXEC=../bin/sem2dsolve_prof
+    cd ../EXAMPLES/2.5D_inplane
+    ../../bin/sem2dsolve_prof
 
 This machine is Apple Silicon (arm64), so `-march=native` targets NEON, not
 AVX2. That doesn't matter here since none of this branch's code is SIMD
