@@ -282,7 +282,7 @@ end subroutine solve_quasi_static
 subroutine compute_Fint(f,d,v,pb)
 
   use fields_class, only : FIELD_get_elem_sub, FIELD_add_elem
-  use mat_gen, only : MAT_Fint
+  use mat_gen, only : MAT_Fint, MAT_needs_veloc
 
   double precision, dimension(:,:), intent(out) :: f
   double precision, dimension(:,:), intent(in) :: d,v
@@ -311,7 +311,10 @@ subroutine compute_Fint(f,d,v,pb)
   do e = 1,pb%grid%nelem
 
     call FIELD_get_elem_sub(d,pb%grid%ibool(:,:,e),dloc)
-    call FIELD_get_elem_sub(v,pb%grid%ibool(:,:,e),vloc)
+   ! MAT_Fint reads v only for materials that need it (Kelvin-Voigt), so
+   ! skip the gather otherwise. vloc stays unreferenced in MAT_Fint then.
+    if (MAT_needs_veloc(pb%matpro(e))) &
+      call FIELD_get_elem_sub(v,pb%grid%ibool(:,:,e),vloc)
     call MAT_Fint(floc,dloc,vloc,pb%matpro(e),pb%matwrk(e), &
                    pb%grid%ngll,pb%fields%ndof,pb%time%dt,pb%grid, &
                    E_ep,E_el,sg,sgp)
@@ -354,7 +357,9 @@ subroutine compute_Fint(f,d,v,pb)
       e = pb%grid%coloring%colors(icol)%elem(ie)
 
       call FIELD_get_elem_sub(d,pb%grid%ibool(:,:,e),dloc)
-      call FIELD_get_elem_sub(v,pb%grid%ibool(:,:,e),vloc)
+     ! see the serial path: gather v only when the material needs it
+      if (MAT_needs_veloc(pb%matpro(e))) &
+        call FIELD_get_elem_sub(v,pb%grid%ibool(:,:,e),vloc)
       call MAT_Fint(floc,dloc,vloc,pb%matpro(e),pb%matwrk(e), &
                      pb%grid%ngll,pb%fields%ndof,pb%time%dt,pb%grid, &
                      E_ep,E_el,sg,sgp)
