@@ -28,20 +28,25 @@ module color_elem
 contains
 
 !=======================================================================
-! Build element conflict graph, execute greedy coloring, group each
-! color into a flat element list, validate conflict-freedom at
-! runtime, and report color statistics.
+! Build element conflict graph from control nodes (knods), execute
+! greedy coloring, group each color into a flat element list, validate
+! conflict-freedom, and report color statistics.
+!
+! Using knods (4 or 9 control nodes per element) instead of ibool
+! (ngll*ngll GLL nodes per element) produces the same conflict graph
+! because two elements share a GLL node if and only if they share a
+! control node, but with much less work.
 !=======================================================================
-  subroutine COLOR_build_and_validate(ibool, nelem, ngll, npoin, coloring)
+  subroutine COLOR_build_and_validate(knods, nelem, ngnod, npoin, coloring)
 
-    integer, intent(in) :: nelem, ngll, npoin
-    integer, intent(in) :: ibool(ngll, ngll, nelem)
+    integer, intent(in) :: nelem, ngnod, npoin
+    integer, intent(in) :: knods(ngnod, nelem)
     type(elem_coloring_type), intent(inout) :: coloring
 
     integer, allocatable :: node_count(:), node_ptr(:), node_cur(:), node_elem_list(:)
     integer, allocatable :: elem_color(:), node_owner(:)
     logical, allocatable :: color_used(:)
-    integer :: total_entries, e, i, j, k, p, nbr, c, max_color, icol
+    integer :: total_entries, e, i, k, p, nbr, c, max_color, icol
     integer :: n_c, idx
     integer :: max_possible_colors
 
@@ -52,18 +57,14 @@ contains
       write(iout, fmt1, advance='no') 'Building element-conflict graph & coloring'
     endif
 
-    ! Step 1: Count elements per node (CSR structure)
+    ! Step 1: Count elements per control node (CSR structure)
     allocate(node_count(npoin))
     node_count = 0
 
     do e = 1, nelem
-      do j = 1, ngll
-      do i = 1, ngll
-        p = ibool(i, j, e)
-        if (p >= 1 .and. p <= npoin) then
-          node_count(p) = node_count(p) + 1
-        endif
-      enddo
+      do i = 1, ngnod
+        p = knods(i, e)
+        node_count(p) = node_count(p) + 1
       enddo
     enddo
 
@@ -79,14 +80,10 @@ contains
     node_cur = node_ptr(1:npoin)
 
     do e = 1, nelem
-      do j = 1, ngll
-      do i = 1, ngll
-        p = ibool(i, j, e)
-        if (p >= 1 .and. p <= npoin) then
-          node_elem_list(node_cur(p)) = e
-          node_cur(p) = node_cur(p) + 1
-        endif
-      enddo
+      do i = 1, ngnod
+        p = knods(i, e)
+        node_elem_list(node_cur(p)) = e
+        node_cur(p) = node_cur(p) + 1
       enddo
     enddo
 
@@ -94,7 +91,6 @@ contains
     deallocate(node_count)
 
     ! Step 2: Greedy coloring in element order e = 1 .. nelem
-    ! Small working array for colors
     max_possible_colors = 100
     allocate(color_used(max_possible_colors))
     color_used = .false.
@@ -103,28 +99,22 @@ contains
     elem_color = 0
 
     do e = 1, nelem
-      ! Mark used colors by already-colored neighbors
-      do j = 1, ngll
-      do i = 1, ngll
-        p = ibool(i, j, e)
-        if (p >= 1 .and. p <= npoin) then
-          do k = node_ptr(p), node_ptr(p + 1) - 1
-            nbr = node_elem_list(k)
-            if (nbr < e) then
-              c = elem_color(nbr)
-              if (c > 0) then
-                if (c > max_possible_colors) then
-                  call IO_abort('COLOR_build: max_possible_colors exceeded')
-                endif
-                color_used(c) = .true.
+      do i = 1, ngnod
+        p = knods(i, e)
+        do k = node_ptr(p), node_ptr(p + 1) - 1
+          nbr = node_elem_list(k)
+          if (nbr < e) then
+            c = elem_color(nbr)
+            if (c > 0) then
+              if (c > max_possible_colors) then
+                call IO_abort('COLOR_build: max_possible_colors exceeded')
               endif
+              color_used(c) = .true.
             endif
-          enddo
-        endif
-      enddo
+          endif
+        enddo
       enddo
 
-      ! Smallest unused color >= 1
       c = 1
       do while (color_used(c))
         c = c + 1
@@ -134,20 +124,15 @@ contains
       enddo
       elem_color(e) = c
 
-      ! Reset color_used for the neighbors
-      do j = 1, ngll
-      do i = 1, ngll
-        p = ibool(i, j, e)
-        if (p >= 1 .and. p <= npoin) then
-          do k = node_ptr(p), node_ptr(p + 1) - 1
-            nbr = node_elem_list(k)
-            if (nbr < e) then
-              c = elem_color(nbr)
-              if (c > 0) color_used(c) = .false.
-            endif
-          enddo
-        endif
-      enddo
+      do i = 1, ngnod
+        p = knods(i, e)
+        do k = node_ptr(p), node_ptr(p + 1) - 1
+          nbr = node_elem_list(k)
+          if (nbr < e) then
+            c = elem_color(nbr)
+            if (c > 0) color_used(c) = .false.
+          endif
+        enddo
       enddo
     enddo
 
@@ -179,8 +164,7 @@ contains
 
     if (echo_init) write(iout, fmtok)
 
-    ! Step 4: Runtime Validation of Coloring
-    ! Assert that within every color, no two elements share any global node id
+    ! Step 4: Validate that within every color no two elements share a control node
     if (echo_init) write(iout, fmt1, advance='no') 'Validating conflict-free coloring'
 
     allocate(node_owner(npoin))
@@ -189,34 +173,19 @@ contains
     do icol = 1, max_color
       do idx = 1, coloring%colors(icol)%nelem
         e = coloring%colors(icol)%elem(idx)
-        do j = 1, ngll
-        do i = 1, ngll
-          p = ibool(i, j, e)
-          if (p >= 1 .and. p <= npoin) then
-            if (node_owner(p) /= 0 .and. node_owner(p) /= e) then
-              write(iout, '(A,I0,A,I0,A,I0,A,I0)') &
-                'ERROR: Conflict in color ', icol, ' at node ', p, &
-                ' between elements ', node_owner(p), ' and ', e
-              call IO_abort('COLORING VALIDATION FAILED: Elements share node within color')
-            endif
-            node_owner(p) = e
+        do i = 1, ngnod
+          p = knods(i, e)
+          if (node_owner(p) /= 0 .and. node_owner(p) /= e) then
+            write(iout, '(A,I0,A,I0,A,I0,A,I0)') &
+              'ERROR: Conflict in color ', icol, ' at node ', p, &
+              ' between elements ', node_owner(p), ' and ', e
+            call IO_abort('COLORING VALIDATION FAILED: Elements share node within color')
           endif
-        enddo
+          node_owner(p) = e
         enddo
       enddo
 
-      ! Clear node_owner for this color
-      do idx = 1, coloring%colors(icol)%nelem
-        e = coloring%colors(icol)%elem(idx)
-        do j = 1, ngll
-        do i = 1, ngll
-          p = ibool(i, j, e)
-          if (p >= 1 .and. p <= npoin) then
-            node_owner(p) = 0
-          endif
-        enddo
-        enddo
-      enddo
+      node_owner = 0
     enddo
 
     deallocate(node_owner)

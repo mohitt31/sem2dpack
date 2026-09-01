@@ -310,7 +310,7 @@ contains
   if (echo_init) write(iout,fmtok)
 
   ! Build element coloring for OpenMP compute_Fint
-  call COLOR_build_and_validate(se%ibool, se%nelem, se%ngll, se%npoin, se%coloring)
+  call COLOR_build_and_validate(se%fem%knods, se%nelem, se%fem%ngnod, se%fem%npoin, se%coloring)
 
   return
 
